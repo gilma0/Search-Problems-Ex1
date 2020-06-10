@@ -16,7 +16,7 @@ public class Ex2 {
 		Matrix father;
 		int emptyi;
 		int emptyj;
-		
+
 		@Override
 	    public boolean equals(Object o) { 
 			if (o == this) { 
@@ -85,6 +85,7 @@ public class Ex2 {
 	}
 	
 	public static boolean check_ok(Matrix m, int position) { //0=up 1=down 2=left 3=right
+		//updating the empty position
 		if(position == 0) {
 			m.emptyi--;
 		}
@@ -97,7 +98,10 @@ public class Ex2 {
 		if(position == 3) {
 			m.emptyj++;
 		}
-		if (m.emptyi < 0 || m.emptyi >= m.state.length || m.emptyj < 0 || m.emptyj >= m.state[0].length) { 
+		if(m.father.father != null && m.emptyi == m.father.father.emptyi && m.emptyj == m.father.father.emptyj) { //checking difference from father of father
+			return false;
+		}
+		if (m.emptyi < 0 || m.emptyi >= m.state.length || m.emptyj < 0 || m.emptyj >= m.state[0].length) { //check for out of bounds
 			/*if(m.emptyi < 0) {
 				System.out.println("too high");
 			}
@@ -259,6 +263,7 @@ public class Ex2 {
 					if(!q.contains(temp2) && !table.contains(temp2)) {
 						if(goal(temp2)) {
 							System.out.println("cost: " + temp2.cost);
+							System.out.println("num: " + num);
 							return path(temp2);
 						}else {
 							q.add(temp2);
