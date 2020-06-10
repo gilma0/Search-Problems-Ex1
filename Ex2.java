@@ -51,6 +51,31 @@ public class Ex2 {
 			this.state[0][0] = -1;
 			this.state[1][1] = 5;
 		}*/
+		//this matrix() is for the input.txt (the first)
+		/*public Matrix() {
+			this.state = new int[3][4];
+			this.state[0][0] = 1;
+			this.state[0][1] = 2;
+			this.state[0][2] = 3;
+			this.state[0][3] = 4;
+			this.state[1][0] = 5;
+			this.state[1][1] = 6;
+			this.state[1][2] = 11;
+			this.state[1][3] = 7;
+			this.state[2][0] = 9;
+			this.state[2][1] = 10;
+			this.state[2][2] = 8;
+			this.state[2][3] = -1;
+			this.emptyi = 2;
+			this.emptyj = 3;
+			this.father = null;
+			for (int i = 0; i < 10; i++) {
+			colors.put(i+1, "Green");
+			}
+			colors.put(11, "Red");
+		}*/
+		
+		//this matrix() is for input2.txt
 		public Matrix() {
 			this.state = new int[3][4];
 			this.state[0][0] = 1;
@@ -68,7 +93,19 @@ public class Ex2 {
 			this.emptyi = 2;
 			this.emptyj = 3;
 			this.father = null;
+			colors.put(1, "Red");
+			colors.put(2, "Red");
+			colors.put(3, "Green");
+			colors.put(4, "Black");
+			colors.put(5, "Green");
+			colors.put(6, "Green");
+			colors.put(7, "Black");
+			colors.put(8, "Black");
+			colors.put(9, "Green");
+			colors.put(10, "Green");
+			colors.put(11, "Black");
 		}
+		
 		
 		public Matrix(Matrix m) {
 			this.cost = m.cost;
@@ -117,7 +154,7 @@ public class Ex2 {
 			//System.out.println("check_ok2: out of bounds");
 			return false;
 		}
-		if(colors.get(m.state[m.emptyi][m.emptyj]).equals("black")) { //black block, can't move
+		if(colors.get(m.state[m.emptyi][m.emptyj]).equals("Black")) { //black block, can't move
 			return false;
 		}
 		return true;
@@ -199,7 +236,8 @@ public class Ex2 {
 		return mat;
 	}
 	
-	public static boolean goal(Matrix mat) {
+	//this goal is for starting with given matrix.
+	/*public static boolean goal(Matrix mat) {
 		int num = 1;
 		for (int i = 0; i < mat.state.length; i++) {
 			for (int j = 0; j < mat.state[0].length; j++) {
@@ -213,31 +251,92 @@ public class Ex2 {
 			}
 		}
 		return true;
+	}*/
+	
+	public static boolean goal(Matrix mat, Matrix finished) {
+		for (int i = 0; i < mat.state.length; i++) {
+			for (int j = 0; j < mat.state[0].length; j++) {
+				if(mat.state[i][j] != finished.state[i][j]) {
+					return false;
+				}
+			}
+		}
+		return true;
 	}
 	
-	public static int path(Matrix mat) {
+	//this path is returning the height of the ans
+	/*public static int path(Matrix mat) {
 		//print the path
-		/*System.out.println("-------------------");
+		System.out.println("-------------------");
 		for (int i = 0; i < mat.state.length; i++) {
 			for (int j = 0; j < mat.state[0].length; j++) {
 				System.out.print(mat.state[i][j] + " ");
 			}
 			System.out.println();
 		}
-		System.out.println("-------------------");*/
+		System.out.println("-------------------");
 		if(mat.father == null) {
 			return 0;
 		}else {
 		 return 1 + path(mat.father);
 		}
+	}*/
+	
+	public static String direction(Matrix mat) {
+		if(mat.father.emptyi == mat.emptyi + 1) {
+			return "U";
+		}
+		else if(mat.father.emptyi == mat.emptyi - 1) {
+			return "D";
+		}
+		else if(mat.father.emptyj == mat.emptyj + 1) {
+			return "L";
+		}
+		return "R";
 	}
 	
-	public static int BFS(Matrix start) {
+	
+	public static String path(Matrix mat) {
+		System.out.println("-------------------");
+		for (int i = 0; i < mat.state.length; i++) {
+			for (int j = 0; j < mat.state[0].length; j++) {
+				System.out.print(mat.state[i][j] + " ");
+			}
+			System.out.println();
+		}
+		System.out.println("-------------------");
+		if(mat.father != null) {
+			return mat.father.state[mat.emptyi][mat.emptyj] + direction(mat) + "-" + path(mat.father);
+		}else {
+			return "";
+		}
+	}
+	
+	public static Matrix finished_mat(Matrix mat) {
+		Matrix ans = new Matrix(mat);
+		ans.father = null;
+		int num = 1;
+		for (int i = 0; i < ans.state.length; i++) {
+			for (int j = 0; j < ans.state[0].length; j++) {
+				if(i == ans.state.length - 1 && j == ans.state[0].length - 1) {
+					ans.state[i][j] = -1;
+				}else {
+					ans.state[i][j] = num++;
+				}
+			}
+		}
+		return ans;		
+	}
+	
+	//starts from answer puzzle to lower the number of nodes created
+	//need the check num!!!!!!!~~~~~~~~~~~~~~~~~~~~~~~
+	public static String BFS(Matrix start) {
 		Hashtable<Integer, Matrix> table = new Hashtable<Integer, Matrix>();
 		Queue<Matrix> q = new LinkedList<Matrix>();
-		q.add(start);
+		q.add(finished_mat(start));
+		//q.add(start);
 		int i = 0;
-		int num = 0;
+		int num = 1;
 		while(!q.isEmpty()) {
 			Matrix temp = q.poll();
 			table.put(i++, temp);
@@ -259,20 +358,24 @@ public class Ex2 {
 						//temp2 = new Matrix(empty_right(temp));
 						temp2 = (empty_right(new Matrix(temp)));
 					}
-					num++;
+					
 					if(!q.contains(temp2) && !table.contains(temp2)) {
-						if(goal(temp2)) {
+						//if(goal(temp2)) {
+						if(goal(temp2, start)) {
 							System.out.println("cost: " + temp2.cost);
 							System.out.println("num: " + num);
-							return path(temp2);
+							String ans = path(temp2);
+							return ans.substring(0, ans.length()-1); //removes the final "-"
 						}else {
 							q.add(temp2);
+							num++;
 						}
 					}
 				}
 			}
 		}
-		return -1;
+		System.out.println("num: " + num);
+		return "no path";
 	}
 	
 	public static void main(String[] args) {
@@ -287,10 +390,7 @@ public class Ex2 {
 		colors.put(3, "Green");
 		colors.put(3, "Green");
 		colors.put(3, "Green");*/
-		for (int i = 0; i < 10; i++) {
-			colors.put(i+1, "Green");
-		}
-		colors.put(11, "Red");
+		
 		//colors.put(5, "Red");
 		/*System.out.println("before:");
 		for (int i = 0; i < aba.state.length; i++) {
