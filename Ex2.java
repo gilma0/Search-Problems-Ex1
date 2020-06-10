@@ -1,6 +1,7 @@
 import java.util.Hashtable;
 import java.util.LinkedList;
 import java.util.Queue;
+import java.util.concurrent.TimeUnit;
 
 
 
@@ -51,8 +52,8 @@ public class Ex2 {
 			this.state[0][0] = -1;
 			this.state[1][1] = 5;
 		}*/
-		//this matrix() is for the input.txt (the first)
-		/*public Matrix() {
+		//this matrix() is for the input.txt (the first) and for input3.txt
+		public Matrix() {
 			this.state = new int[3][4];
 			this.state[0][0] = 1;
 			this.state[0][1] = 2;
@@ -73,10 +74,10 @@ public class Ex2 {
 			colors.put(i+1, "Green");
 			}
 			colors.put(11, "Red");
-		}*/
+		}
 		
 		//this matrix() is for input2.txt
-		public Matrix() {
+		/*public Matrix() {
 			this.state = new int[3][4];
 			this.state[0][0] = 1;
 			this.state[0][1] = 2;
@@ -104,7 +105,7 @@ public class Ex2 {
 			colors.put(9, "Green");
 			colors.put(10, "Green");
 			colors.put(11, "Black");
-		}
+		}*/
 		
 		
 		public Matrix(Matrix m) {
@@ -295,7 +296,7 @@ public class Ex2 {
 		return "R";
 	}
 	
-	
+	//maybe needs to do with the hashtable table of BFS
 	public static String path(Matrix mat) {
 		System.out.println("-------------------");
 		for (int i = 0; i < mat.state.length; i++) {
@@ -378,36 +379,193 @@ public class Ex2 {
 		return "no path";
 	}
 	
+	//old h function
+	/*public static int h(Matrix mat) {
+		int Edistance = 0;
+		Matrix temp = finished_mat(mat);
+		for (int i = 0; i < mat.state.length; i++) {
+			for (int j = 0; j < mat.state[0].length; j++) {
+				if(temp.state[i][j] != mat.state[i][j]) {
+					//Edistance += Math.abs(arg0)
+					int x1 = 0;
+					int y1 = 0;
+					int num = mat.state[i][j];//number that should be here
+					for (int k = 0; k < mat.state.length; k++) {//find the number position in the given mat
+						for (int k2 = 0; k2 < mat.state[0].length; k2++) {
+							//if(mat.state[k][k2] == temp.state[i][j] && mat.state[k][k2] == num) {
+							if(mat.state[k][k2] == num) {
+								x1 = k + 1;
+								y1 = k2 + 1;
+								//x1 = k;
+								//y1 = k2;
+								System.out.println("x1: " + x1 + "\ny1: " + y1);
+							}
+						}
+					}
+					//Edistance += (Math.abs(x1-(i+1)) + Math.abs(y1-(j+1)));
+					//System.out.println(num);
+					if(num == -1) {
+						continue;
+					}
+					if(colors.get(num).equals("Red")) {
+						Edistance += (Math.abs(x1-(i+1)) + Math.abs(y1-(j+1))) * 30;
+					}else {
+						Edistance += (Math.abs(x1-(i+1)) + Math.abs(y1-(j+1)));
+					}
+					System.out.println("current state of Edistance: " + Edistance);
+				}
+			}
+		}
+		return Edistance;
+	}*/
+	public static int h(Matrix mat) {
+		int Edistance = 0;
+		Matrix temp = finished_mat(mat);
+		//int num = 1;
+		for (int i = 0; i < mat.state.length; i++) {
+			for (int j = 0; j < mat.state[0].length; j++) {
+				if(mat.state[i][j] == -1) {
+					continue;
+				}
+				if(mat.state[i][j] != temp.state[i][j]) {
+					int x1 = 0;
+					int y1 = 0;
+					for (int i2 = 0; i2 < mat.state.length; i2++) {
+						for (int j2 = 0; j2 < mat.state[0].length; j2++) {
+							if(mat.state[i2][j2] == temp.state[i][j]) {
+								x1 = i2+1;
+								y1 = j2+1;
+							}
+						}
+					}
+					//Edistance += (Math.abs(i-x1) + Math.abs(j-y1)) * ;
+					if(colors.get(mat.state[i][j]).equals("Red")) {
+						Edistance += (Math.abs(x1-(i+1)) + Math.abs(y1-(j+1))) * 30;
+					}else {
+						Edistance += (Math.abs(x1-(i+1)) + Math.abs(y1-(j+1)));
+					}
+				}
+			}
+		}
+		return Edistance;
+	}
+	
+	//f(n) = g(n) + h(n) //cost until now + estimated cost
+	public static int f(Matrix mat) {
+		return mat.cost + h(mat);
+		//return mat.cost + calculateManhattanDistance(mat);
+	}
+	
+	
+	//A* algorithm
+	//extremely similar to BFS, only difference is that we choose the best child to continue, the one with the lowest estimated cost to goal. 
+	//need to check if start from start or from the end
+	public static String A(Matrix start){
+		Hashtable<Integer, Matrix> table = new Hashtable<Integer, Matrix>();
+		Queue<Matrix> q = new LinkedList<Matrix>();
+		q.add(start); //this one has to start with the starting q
+		//q.add(start);
+		int i = 0;
+		int num = 1;
+		while(!q.isEmpty()) {
+			Matrix temp = q.poll();
+			int min = f(temp);
+			//System.out.println("first min:" + min);
+			while(!q.isEmpty()) {
+				//int min = f(temp);
+				int fSibling = f(q.peek());
+				//System.out.println("fsibling: " + fSibling);
+				if(fSibling < min) {
+					temp = q.poll();
+					min = fSibling;
+				}else {
+					q.poll();
+				}
+			}
+			//System.out.println("min: " + min);
+			/*System.out.println(q.size());*/
+			/*try {
+				TimeUnit.SECONDS.sleep(1);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}*/
+			/*while(!q.isEmpty()) {//here i need to choose the best child, in this manner each time i get here ill work only with the one node at a time
+				int min = f(temp);
+				int fSibling = f(q.peek());
+				System.out.println("7D: " + fSibling);
+				shula++;
+				//return "";
+				if(fSibling < min) {
+					temp = q.poll();
+					min = fSibling;
+				}else {
+					q.poll();
+				}
+			}
+			if(shula > 2) {
+				return "";
+			}
+			System.out.println("abababababababa");*/
+			//Matrix temp = q.poll();
+			table.put(i++, temp);
+			for (int j = 0; j < 4; j++) {
+				Matrix temp2 = null;
+				if(check_ok(new Matrix(temp), j)){
+					if(j == 0) {
+						temp2 = (empty_up(new Matrix(temp)));
+					}
+					if(j == 1) {
+						//temp2 = new Matrix(empty_down(temp));
+						temp2 = (empty_down(new Matrix(temp)));
+					}
+					if(j == 2) {
+						//temp2 = new Matrix(empty_left(temp));
+						temp2 = (empty_left(new Matrix(temp)));
+					}
+					if(j == 3) {
+						//temp2 = new Matrix(empty_right(temp));
+						temp2 = (empty_right(new Matrix(temp)));
+					}
+					num++;
+					if(!q.contains(temp2) && !table.contains(temp2)) {
+						//if(goal(temp2)) {
+						if(goal(temp2, finished_mat(start))) {
+							System.out.println("cost: " + temp2.cost);
+							System.out.println("num: " + num);
+							String ans = path(temp2);
+							return ans.substring(0, ans.length()-1); //removes the final "-"
+						}else {
+							q.add(temp2);
+							//num++;
+						}
+					}
+				}
+			}
+		}
+		System.out.println("num: " + num);
+		return "no path";
+	}
+	
 	public static void main(String[] args) {
 		Matrix aba = new Matrix();
-		/*colors.put(1, "Green");
-		colors.put(2, "Green");
-		colors.put(3, "Green");
-		colors.put(4, "Green");
-		colors.put(5, "Green");
-		colors.put(3, "Green");
-		colors.put(3, "Green");
-		colors.put(3, "Green");
-		colors.put(3, "Green");
-		colors.put(3, "Green");*/
-		
-		//colors.put(5, "Red");
-		/*System.out.println("before:");
-		for (int i = 0; i < aba.state.length; i++) {
-			for (int j = 0; j < aba.state[0].length; j++) {
-				System.out.print(aba.state[i][j] + " ");
-			}
-			System.out.println();
-		}
-		Matrix temp = empty_left(new Matrix(aba));
-		System.out.println("after:");
-		for (int i = 0; i < temp.state.length; i++) {
-			for (int j = 0; j < temp.state[0].length; j++) {
-				System.out.print(temp.state[i][j] + " ");
-			}
-			System.out.println();
-		}
-		System.out.println("cost: " + temp.cost);*/
-		System.out.println(BFS(aba));
+		System.out.println(A(aba));
+		//System.out.println(h(aba));
+		//System.out.println(h(empty_left(new Matrix(aba))));
+		//System.out.println("empty right: " + f(empty_right(empty_up(empty_left(new Matrix(aba))))));
+		//System.out.println("empty left: " + f(empty_left(empty_up(empty_left(new Matrix(aba))))));
+		//System.out.println("empty up: " + f(empty_up(empty_up(empty_left(new Matrix(aba))))));
+		//System.out.println("empty down: " + f(empty_down(empty_up(empty_left(new Matrix(aba))))));
+		////System.out.println("empty down: " + h(empty_down(empty_right(empty_up(empty_left(new Matrix(aba)))))));
+		////System.out.println("empty up: " + h(empty_up(empty_right(empty_up(empty_left(new Matrix(aba)))))));
+		//System.out.println("empty right: " + f(empty_right(empty_right(empty_up(empty_left(new Matrix(aba)))))));
+		////System.out.println("empty left: " + h(empty_left(empty_right(empty_up(empty_left(new Matrix(aba)))))));
+		//System.out.println(h(empty_up(new Matrix(aba))));
+		//System.out.println(h(aba));
+		//System.out.println(f(empty_left(new Matrix(aba))));
+		//System.out.println(f(empty_left(empty_up(new Matrix(aba)))));
+		//System.out.println(f(empty_up(new Matrix(aba))));
+		//System.out.println(h(empty_left(empty_left(new Matrix(aba)))));
+
 	}
 }
