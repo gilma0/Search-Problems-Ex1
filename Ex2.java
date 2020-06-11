@@ -658,18 +658,25 @@ public class Ex2 {
 								//temp2 = new Matrix(empty_right(temp));
 								temp2 = (empty_right(new Matrix(temp)));
 							}
+							//n++;
 							//System.out.println("aba");
 							if(f(temp2) > t) {
 								minF = Math.min(minF, f(temp2));
+								n++;
+								//System.out.println("if1");
 								continue;
 							}
+							//n++;
 							//table.
 							//if(table.contains(temp2) && table.get(temp2).marked.equals("out")) {
 							if(table.contains(temp2) && table.get(temp2).equals("out")) {
+								n++;
+								//System.out.println("if2");
 								continue;
 							}
 							//if(table.contains(temp2) && !table.get(temp2).marked.equals("out")) {
 							if(table.contains(temp2) && !table.get(temp2).equals("out")) {//addition
+								n++;
 								Matrix temp3 = null; //g'
 								for (Matrix key : table.keySet()) {
 									if(key.equals(temp2)) {
@@ -686,12 +693,14 @@ public class Ex2 {
 								}
 							}
 							if(goal(temp2, finished_mat(start))) { //this is g not g'
-								System.out.println(temp2.cost);
+								System.out.println("cost: " + temp2.cost);
+								System.out.println("num: " + n);
 								String ans = path2(temp2);
 								return ans.substring(1);
 								//return path(temp2); //path of g, not g'
 							}
 							s.add(temp2);    //this is g, not g'
+							//n++;
 							//table.put(temp2, temp2); //this is g, not g'
 							//table.put(temp2, "out");
 							table.put(temp2, "");
