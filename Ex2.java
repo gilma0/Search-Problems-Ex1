@@ -164,6 +164,23 @@ public class Ex2 {
 		}
 		return true;
 	}
+	public static Matrix getMove(Matrix mat, int n) {
+		if(n == 0) {
+			return (empty_up(new Matrix(mat)));
+		}
+		else if(n == 1) {
+			//temp2 = new Matrix(empty_down(temp));
+			return (empty_down(new Matrix(mat)));
+		}
+		else if(n == 2) {
+			//temp2 = new Matrix(empty_left(temp));
+			return (empty_left(new Matrix(mat)));
+		}
+		else	{
+			//temp2 = new Matrix(empty_right(temp));
+			return (empty_right(new Matrix(mat)));
+		}
+	}
 	
 	
 	/*public static Matrix empty_up(Matrix m) {
@@ -376,7 +393,7 @@ public class Ex2 {
 			for (int j = 0; j < 4; j++) {
 				Matrix temp2 = null;
 				if(check_ok(new Matrix(temp), j)){
-					if(j == 0) {
+					/*if(j == 0) {
 						temp2 = (empty_up(new Matrix(temp)));
 					}
 					if(j == 1) {
@@ -390,7 +407,8 @@ public class Ex2 {
 					if(j == 3) {
 						//temp2 = new Matrix(empty_right(temp));
 						temp2 = (empty_right(new Matrix(temp)));
-					}
+					}*/
+					temp2 = getMove(temp, j);
 					
 					if(!q.contains(temp2) && !table.contains(temp2)) {
 						//if(goal(temp2)) {
@@ -516,7 +534,7 @@ public class Ex2 {
 			for (int j = 0; j < 4; j++) {
 				Matrix temp2 = null;
 				if(check_ok(new Matrix(temp), j)){
-					if(j == 0) {
+					/*if(j == 0) {
 						temp2 = (empty_up(new Matrix(temp)));
 					}
 					if(j == 1) {
@@ -530,7 +548,8 @@ public class Ex2 {
 					if(j == 3) {
 						//temp2 = new Matrix(empty_right(temp));
 						temp2 = (empty_right(new Matrix(temp)));
-					}
+					}*/
+					temp2 = getMove(temp, j);
 					num++;
 					if(!q.contains(temp2) && !table.contains(temp2)) {
 						//if(goal(temp2)) {
@@ -577,7 +596,7 @@ public class Ex2 {
 			for (int j = 0; j < 4; j++) {
 				Matrix temp2 = null;
 				if(check_ok(new Matrix(n), j)){
-					if(j == 0) {
+					/*if(j == 0) {
 						temp2 = (empty_up(new Matrix(n)));
 					}
 					if(j == 1) {
@@ -591,7 +610,8 @@ public class Ex2 {
 					if(j == 3) {
 						//temp2 = new Matrix(empty_right(temp));
 						temp2 = (empty_right(new Matrix(n)));
-					}
+					}*/
+					temp2 = getMove(n, j); //instead of if's
 					//num++;
 					if(!table.contains(temp2)) {
 						String result = Limited_DFS(temp2, limit - 1, table);
@@ -644,7 +664,7 @@ public class Ex2 {
 					for (int j = 0; j < 4; j++) {
 						Matrix temp2 = null; //temp2 == g
 						if(check_ok(new Matrix(temp), j)){
-							if(j == 0) {
+							/*if(j == 0) {
 								temp2 = (empty_up(new Matrix(temp)));
 							}
 							if(j == 1) {
@@ -658,7 +678,8 @@ public class Ex2 {
 							if(j == 3) {
 								//temp2 = new Matrix(empty_right(temp));
 								temp2 = (empty_right(new Matrix(temp)));
-							}
+							}*/
+							temp2 = getMove(temp, j);
 							//n++;
 							//System.out.println("aba");
 							if(f(temp2) > t) {
@@ -717,7 +738,7 @@ public class Ex2 {
 	public static void main(String[] args) {
 		Matrix aba = new Matrix();
 		//System.out.println(A(aba));
-		System.out.println(DFID(aba));
+		System.out.println(BFS(aba));
 		//System.out.println(h(aba));
 		//System.out.println(h(empty_left(new Matrix(aba))));
 		//System.out.println("empty right: " + f(empty_right(empty_up(empty_left(new Matrix(aba))))));
