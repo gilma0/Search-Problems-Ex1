@@ -552,26 +552,27 @@ public class Ex2 {
 		return "no path";
 	}
 	//not finished, need alot of checking with the badkan
-	public static void DFID(Matrix start, Matrix[] goals) {
+	public static String DFID(Matrix start) {
 		int depth = 1;
-		while(true) {
+		while(true) { //not while true
 
 			Hashtable<Integer, Matrix> table = new Hashtable<Integer, Matrix>();
-			//boolean result = Limited_DFS(start, goals, depth, table);
-			//if(result != null) {
-				//return result;
-		//	}
+			String result = Limited_DFS(start, depth, table);
+			if(result != null && !result.equals("cutoff") && !result.equals("fail")) {
+				return result.substring(1);
+			}
 			depth++;
 		}
+		//should return no path
 	}
 	
-	public static String Limited_DFS(Matrix n, Matrix goals, int limit, Hashtable<Integer, Matrix> table) {
+	public static String Limited_DFS(Matrix n, int limit, Hashtable<Integer, Matrix> table) {
 		if(goal(n, finished_mat(n))) {
-			return path(n);
+			return path2(n);
 		}else if(limit == 0) {
 			return "cutoff";
 		}else {
-			table.put(1, n); //needs change
+			table.put(limit, n); //needs change
 			boolean isCutoff = false;
 			for (int j = 0; j < 4; j++) {
 				Matrix temp2 = null;
@@ -593,7 +594,7 @@ public class Ex2 {
 					}
 					//num++;
 					if(!table.contains(temp2)) {
-						String result = Limited_DFS(temp2, goals, limit - 1, table);
+						String result = Limited_DFS(temp2, limit - 1, table);
 						if(result == "cutoff") {
 							isCutoff = true;
 						}else if(result != "fail") {//change fail!~!~!~!~!~!~
@@ -602,7 +603,7 @@ public class Ex2 {
 					}
 				}
 			}
-			table.remove(1); //needs change
+			table.remove(limit); //needs change
 			if(isCutoff == true) {
 				return "cutoff";
 			}else {
@@ -716,7 +717,7 @@ public class Ex2 {
 	public static void main(String[] args) {
 		Matrix aba = new Matrix();
 		//System.out.println(A(aba));
-		System.out.println(IDA(aba));
+		System.out.println(DFID(aba));
 		//System.out.println(h(aba));
 		//System.out.println(h(empty_left(new Matrix(aba))));
 		//System.out.println("empty right: " + f(empty_right(empty_up(empty_left(new Matrix(aba))))));
