@@ -156,7 +156,7 @@ public class Ex1 {
 		}
 	}
 	
-	public static boolean check_ok(Matrix m, int position) { //0=up 1=down 2=left 3=right
+	/*public static boolean check_ok(Matrix m, int position) { //0=up 1=down 2=left 3=right
 		//updating the empty position
 		if(position == 0) {
 			m.emptyi--;
@@ -185,6 +185,48 @@ public class Ex1 {
 			}
 			if(m.emptyj >= m.mat[0].length) {
 				System.out.println("too right");
+			}
+			//System.out.println("check_ok2: out of bounds");
+			return false;
+		}
+		if(colors.get(m.state[m.emptyi][m.emptyj]).equals("Black")) { //black block, can't move
+			return false;
+		}
+		return true;
+	}*/
+	public static boolean check_ok(Matrix m, int position) { //0=left 1=up 2=right 3=down
+		//updating the empty position
+		if(position == 0) {
+			//m.emptyi--;
+			m.emptyj++;
+		}
+		if(position == 1) {
+			//m.emptyi++;
+			m.emptyi++;
+		}
+		if(position == 2) {
+			//m.emptyj--;
+			m.emptyj--;
+		}
+		if(position == 3) {
+			//m.emptyj++;
+			m.emptyi--;
+		}
+		if(m.father.father != null && m.emptyi == m.father.father.emptyi && m.emptyj == m.father.father.emptyj) { //checking difference from father of father
+			return false;
+		}
+		if (m.emptyi < 0 || m.emptyi >= m.state.length || m.emptyj < 0 || m.emptyj >= m.state[0].length) { //check for out of bounds
+			/*if(m.emptyi < 0) {
+				System.out.println("too high");
+			}
+			if(m.emptyi >= m.mat.length) {
+				System.out.println("too low");
+			}
+			if(m.emptyj < 0) {
+				System.out.println("too left");
+			}
+			if(m.emptyj >= m.mat[0].length) {
+				System.out.println("too right");
 			}*/
 			//System.out.println("check_ok2: out of bounds");
 			return false;
@@ -194,7 +236,8 @@ public class Ex1 {
 		}
 		return true;
 	}
-	public static Matrix getMove(Matrix mat, int n) {
+
+	/*public static Matrix getMove(Matrix mat, int n) { //old
 		if(n == 0) {
 			return (empty_up(new Matrix(mat)));
 		}
@@ -209,6 +252,40 @@ public class Ex1 {
 		else	{
 			//temp2 = new Matrix(empty_right(temp));
 			return (empty_right(new Matrix(mat)));
+		}
+	}*/
+	/*public static Matrix getMove(Matrix mat, int n) { //newer old
+		if(n == 0) {
+			return (empty_left(new Matrix(mat)));
+		}
+		else if(n == 1) {
+			//temp2 = new Matrix(empty_down(temp));
+			return (empty_up(new Matrix(mat)));
+		}
+		else if(n == 2) {
+			//temp2 = new Matrix(empty_left(temp));
+			return (empty_right(new Matrix(mat)));
+		}
+		else	{
+			//temp2 = new Matrix(empty_right(temp));
+			return (empty_down(new Matrix(mat)));
+		}
+	}*/
+	public static Matrix getMove(Matrix mat, int n) { //newer old
+		if(n == 0) {
+			return (empty_right(new Matrix(mat)));
+		}
+		else if(n == 1) {
+			//temp2 = new Matrix(empty_down(temp));
+			return (empty_down(new Matrix(mat)));
+		}
+		else if(n == 2) {
+			//temp2 = new Matrix(empty_left(temp));
+			return (empty_left(new Matrix(mat)));
+		}
+		else	{
+			//temp2 = new Matrix(empty_right(temp));
+			return (empty_up(new Matrix(mat)));
 		}
 	}
 	
@@ -377,14 +454,14 @@ public class Ex1 {
 		}
 	}
 	public static String path2(Matrix mat) {
-		/*System.out.println("-------------------");
+		System.out.println("-------------------");
 		for (int i = 0; i < mat.state.length; i++) {
 			for (int j = 0; j < mat.state[0].length; j++) {
 				System.out.print(mat.state[i][j] + " ");
 			}
 			System.out.println();
 		}
-		System.out.println("-------------------");*/
+		System.out.println("-------------------");
 		if(mat.father != null) {
 			return path2(mat.father) + "-" + mat.father.state[mat.emptyi][mat.emptyj] + direction2(mat);
 		}else {
@@ -413,8 +490,8 @@ public class Ex1 {
 	public static String BFS(Matrix start) {
 		Hashtable<Integer, Matrix> table = new Hashtable<Integer, Matrix>();
 		Queue<Matrix> q = new LinkedList<Matrix>();
-		q.add(finished_mat(start));
-		//q.add(start);
+		//q.add(finished_mat(start));
+		q.add(start);
 		int i = 0;
 		int num = 1;
 		while(!q.isEmpty()) {
@@ -439,20 +516,22 @@ public class Ex1 {
 						temp2 = (empty_right(new Matrix(temp)));
 					}*/
 					temp2 = getMove(temp, j);
-					
+					num++;
 					if(!q.contains(temp2) && !table.contains(temp2)) {
 						//num++;
 						//if(goal(temp2)) {
-						if(goal(temp2, start)) {
+						//if(goal(temp2, start)) {
+						if(goal(temp2, finished_mat(start))) {
 							System.out.println("cost: " + temp2.cost);
 							System.out.println("num: " + num);
-							String ans = path(temp2);
+							String ans = path2(temp2);
 							ansNum = num;
 							ansCost = temp2.cost;
-							return ans.substring(0, ans.length()-1); //removes the final "-"
+							//return ans.substring(0, ans.length()-1); //removes the final "-"
+							return ans.substring(1);
 						}else {
 							q.add(temp2);
-							num++;
+							//num++;
 						}
 					}
 				}
@@ -633,7 +712,7 @@ public class Ex1 {
 				}
 			} //continue like BFS
 			table.put(i++, temp);
-			for (int j = 0; j < 4; j++) {
+			for (int j = 0; j < 4; j++) { //first create all children!~!~!~!~!~!~!~!~!~
 				Matrix temp2 = null;
 				if(check_ok(new Matrix(temp), j)){
 					/*if(j == 0) {
@@ -652,14 +731,22 @@ public class Ex1 {
 						temp2 = (empty_right(new Matrix(temp)));
 					}*/
 					temp2 = getMove(temp, j);
-					num++;
+					num++; //the correct son is entered before the other is created, i need to create them both so i choose the correct with the right amount of nodes
 					if(!q.contains(temp2) && !table.contains(temp2)) {
 						//if(goal(temp2)) {
 						if(goal(temp2, finished_mat(start))) {
+							j++;
+							while(j < 4) { //counting brothers (finishes before creating them)
+								if(check_ok(new Matrix(temp), j)) {
+									num++;
+								}
+								j++;
+							}
 							System.out.println("cost: " + temp2.cost);
 							System.out.println("num: " + num);
 							String ans = path2(temp2);
 							ansNum = num;
+							//ansNum = table.size();
 							ansCost = temp2.cost;
 							return ans.substring(1); //removes the final "-"
 							//return ans;
@@ -825,6 +912,7 @@ public class Ex1 {
 								}
 							}
 							if(goal(temp2, finished_mat(start))) { //this is g not g'
+								n++;
 								System.out.println("cost: " + temp2.cost);
 								System.out.println("num: " + n);
 								String ans = path2(temp2);
@@ -833,6 +921,7 @@ public class Ex1 {
 								return ans.substring(1);
 								//return path(temp2); //path of g, not g'
 							}
+							//n++;
 							s.add(temp2);    //this is g, not g'
 							//n++;
 							//table.put(temp2, temp2); //this is g, not g'
@@ -979,7 +1068,7 @@ public class Ex1 {
 	
 	
 	public static void main(String[] args) throws NumberFormatException, IOException {
-		//Game("C:\\Users\\Gil-PC\\Desktop\\problem_solving\\input4.txt");
+		//Game("C:\\Users\\Gil-PC\\Desktop\\inputoutput\\input3.txt");
 		//System.out.println(args[0]);
 		Game("input.txt");
 		//System.out.println(A(aba));
