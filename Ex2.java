@@ -1,3 +1,5 @@
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Hashtable;
 import java.util.LinkedList;
 import java.util.Queue;
@@ -78,6 +80,9 @@ public class Ex2 {
 			colors.put(11, "Red");
 			this.marked = ""; //for IDA*
 		}
+		
+		
+			
 		
 		//this matrix() is for input2.txt
 		/*public Matrix() {
@@ -429,6 +434,106 @@ public class Ex2 {
 		return "no path";
 	}
 	
+	public static String DFBnB(Matrix mat) {
+		Hashtable<Matrix, String> table = new Hashtable<Matrix, String>();
+		Stack<Matrix> stack = new Stack<Matrix>();
+		String result = null;
+		int t = Integer.MAX_VALUE;
+		//int num =0;
+		stack.add(mat);
+		table.put(mat, "");
+		while(!stack.isEmpty()) {
+			Matrix temp = stack.pop();
+			if(table.get(temp).equals("out")) {
+				table.remove(temp);
+			}else {
+				table.remove(temp);
+				table.put(temp, "out");
+				ArrayList<Matrix> array = new ArrayList<Matrix>();
+				for (int j = 0; j < 4; j++) {
+					if(check_ok(new Matrix(temp), j)){
+						array.add(getMove(temp, j));  /*= null;
+							if(j==1) {//up this is the move ie-1,je
+								if (matrix.checkIfBlackOrNullPtr(matrix.ie-1,matrix.je)) {//chack if can move and if he dosent go back to the father						
+									mat = new Matrix(matrix);
+									mat.move(matrix.ie-1,matrix.je,"D");//the move
+									num++;
+									N.add(mat);
+								}
+							}
+							else if(j==2) {//down this is the move ie+1,je
+								if(matrix.checkIfBlackOrNullPtr(matrix.ie+1,matrix.je)) {						
+									mat = new Matrix(matrix);
+									mat.move(matrix.ie+1,matrix.je,"U");
+									num++;
+									N.add(mat);
+								}
+							}
+							else if(j==3) {//left this is the move ie,je-1
+								if(matrix.checkIfBlackOrNullPtr(matrix.ie,matrix.je-1)) {					
+									mat = new Matrix(matrix);
+									mat.move(matrix.ie,matrix.je-1,"R");
+									num++;
+									N.add(mat);
+								}
+							}
+							else if(j==4) {//right this is the move ie,je+1
+								if(matrix.checkIfBlackOrNullPtr(matrix.ie,matrix.je+1)) {								
+									mat=new Matrix(matrix);
+									mat.move(matrix.ie,matrix.je+1,"L");
+									num++;
+									N.add(mat);
+								}
+							}
+						}*/
+						array.sort(new Comparator<Matrix>() {public int compare(Matrix m1, Matrix m2) {return f(m1)-f(m2);}});	
+						for (int i = 0; i < array.size(); i++) {////check this for
+							int eCost = f(array.get(i));
+							if(eCost >= t) {
+								for (int k = i; k < array.size(); k++) {
+									array.remove(k);
+								}
+							}
+							else if(table.contains(array.get(i)) && table.get(array.get(i)).equals("out")) {
+								array.remove(i);
+							}
+							else if(table.contains(array.get(i)) && !table.get(array.get(i)).equals("out")) {
+								for (Matrix key : table.keySet()) {
+									if(key.equals(array.get(i)) && f(key) <= eCost) {								
+										array.remove(i);
+									}else {
+										stack.remove(key);
+										table.remove(key);
+									}
+								}
+							}
+							else if(goal(array.get(i), finished_mat(mat))) {
+								//N.get(i).findf(N.get(i)).updatef(num, N.get(i).cost, N.get(i).path().substring(1));
+								t = f(array.get(i));
+								//t = f(temp2);
+								//System.out.println(path2(array.get(i)));
+								//System.out.println(path2(temp2));
+								result = path2(array.get(i));
+								return result.substring(1);
+								/*for (int k = i; k < array.size(); k++) { ///~~~~~~~not sure about this, no need to continue
+									array.remove(k);
+									//i++;//??????????????
+								}*/
+							}
+						}
+						for (int k = array.size() - 1; k >= 0; k--) {
+							//if(k<array.size() && array.get(k)!=null) {
+								stack.add(array.get(k));
+								table.put(array.get(k), "");
+							//}
+						}
+					}
+				}
+			}
+		}
+		return "no path";
+	}
+	
 	//old h function
 	/*public static int h(Matrix mat) {
 		int Edistance = 0;
@@ -738,7 +843,7 @@ public class Ex2 {
 	public static void main(String[] args) {
 		Matrix aba = new Matrix();
 		//System.out.println(A(aba));
-		System.out.println(BFS(aba));
+		System.out.println(DFBnB(aba));
 		//System.out.println(h(aba));
 		//System.out.println(h(empty_left(new Matrix(aba))));
 		//System.out.println("empty right: " + f(empty_right(empty_up(empty_left(new Matrix(aba))))));
