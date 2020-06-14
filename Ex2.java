@@ -1,7 +1,10 @@
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -16,6 +19,8 @@ import java.util.concurrent.TimeUnit;
 public class Ex2 {
 	
 	static Hashtable<Integer, String> colors = new Hashtable<Integer, String>();
+	static int ansNum;
+	static int ansCost;
 	
 	public static class Matrix {
 		
@@ -357,14 +362,14 @@ public class Ex2 {
 	
 	//maybe needs to do with the hashtable table of BFS, this path is for BFS
 	public static String path(Matrix mat) {
-		System.out.println("-------------------");
+		/*System.out.println("-------------------");
 		for (int i = 0; i < mat.state.length; i++) {
 			for (int j = 0; j < mat.state[0].length; j++) {
 				System.out.print(mat.state[i][j] + " ");
 			}
 			System.out.println();
 		}
-		System.out.println("-------------------");
+		System.out.println("-------------------");*/
 		if(mat.father != null) {
 			return mat.father.state[mat.emptyi][mat.emptyj] + direction(mat) + "-" + path(mat.father);
 		}else {
@@ -372,14 +377,14 @@ public class Ex2 {
 		}
 	}
 	public static String path2(Matrix mat) {
-		System.out.println("-------------------");
+		/*System.out.println("-------------------");
 		for (int i = 0; i < mat.state.length; i++) {
 			for (int j = 0; j < mat.state[0].length; j++) {
 				System.out.print(mat.state[i][j] + " ");
 			}
 			System.out.println();
 		}
-		System.out.println("-------------------");
+		System.out.println("-------------------");*/
 		if(mat.father != null) {
 			return path2(mat.father) + "-" + mat.father.state[mat.emptyi][mat.emptyj] + direction2(mat);
 		}else {
@@ -411,7 +416,7 @@ public class Ex2 {
 		q.add(finished_mat(start));
 		//q.add(start);
 		int i = 0;
-		int num = 1;
+		int num = 0;
 		while(!q.isEmpty()) {
 			Matrix temp = q.poll();
 			table.put(i++, temp);
@@ -436,15 +441,17 @@ public class Ex2 {
 					temp2 = getMove(temp, j);
 					
 					if(!q.contains(temp2) && !table.contains(temp2)) {
+						num++;
 						//if(goal(temp2)) {
 						if(goal(temp2, start)) {
 							System.out.println("cost: " + temp2.cost);
 							System.out.println("num: " + num);
 							String ans = path(temp2);
+							ansNum = num;
+							ansCost = temp2.cost;
 							return ans.substring(0, ans.length()-1); //removes the final "-"
 						}else {
 							q.add(temp2);
-							num++;
 						}
 					}
 				}
@@ -499,6 +506,8 @@ public class Ex2 {
 								t = f(array.get(i));
 								//t = f(temp2);
 								result = path2(array.get(i));
+								ansNum = 0; //needs replacing
+								ansCost = array.get(i).cost;
 								return result.substring(1);
 								/*for (int k = i; k < array.size(); k++) { ///~~~~~~~not sure about this, no need to continue
 									array.remove(k);
@@ -647,6 +656,8 @@ public class Ex2 {
 							System.out.println("cost: " + temp2.cost);
 							System.out.println("num: " + num);
 							String ans = path2(temp2);
+							ansNum = num;
+							ansCost = temp2.cost;
 							return ans.substring(1); //removes the final "-"
 							//return ans;
 						}else {
@@ -668,6 +679,8 @@ public class Ex2 {
 			Hashtable<Integer, Matrix> table = new Hashtable<Integer, Matrix>();
 			String result = Limited_DFS(start, depth, table);
 			if(result != null && !result.equals("cutoff") && !result.equals("fail")) {
+				ansNum = 0; //this is temporary for now, needs checking
+				ansCost = 0;
 				return result.substring(1);
 			}
 			depth++;
@@ -708,6 +721,7 @@ public class Ex2 {
 						if(result == "cutoff") {
 							isCutoff = true;
 						}else if(result != "fail") {//change fail!~!~!~!~!~!~
+							ansCost = temp2.cost;
 							return result;
 						}
 					}
@@ -808,6 +822,8 @@ public class Ex2 {
 								System.out.println("cost: " + temp2.cost);
 								System.out.println("num: " + n);
 								String ans = path2(temp2);
+								ansNum = n;
+								ansCost = temp2.cost;
 								return ans.substring(1);
 								//return path(temp2); //path of g, not g'
 							}
@@ -828,7 +844,7 @@ public class Ex2 {
 	public static void Game(String path) throws NumberFormatException, IOException{
 		Matrix start;
 		String algo = null;
-		boolean time;
+		boolean time = false;
 		boolean openclosed;
 		//public Hashtable<Integer, String> Colors = new Hashtable<Integer, String>();
 		//ArrayList<Block[][]> exist= new ArrayList<Block[][]>();
@@ -909,28 +925,49 @@ public class Ex2 {
 				}
 				System.out.println();
 			}*/
+			  String ans;
 			  if(algo.equals("BFS")) {
-				  System.out.println(BFS(start));
+				  //System.out.println(BFS(start));
+				  ans = BFS(start);
 			  }
 			  else if(algo.equals("A*")) {
-				  System.out.println(A(start));
+				  //System.out.println(A(start));
+				  ans = A(start);
 			  }
 			  else if(algo.equals("DFID")) {
-				  System.out.println(DFID(start));
+				  //System.out.println(DFID(start));
+				  ans = DFID(start);
 			  }
 			  else if(algo.equals("IDA*")) {
-				  System.out.println(IDA(start));
+				  //System.out.println(IDA(start));
+				  ans = IDA(start);
 			  }
 			  else {
-				  System.out.println(DFBnB(start));
+				  //System.out.println(DFBnB(start));
+				  ans = DFBnB(start);
 			  }
 			  //System.out.println(start.num);
 			  System.out.println("cost: " + start.cost);
 			  //System.out.println(start.path);
 			  long stopTime3 = System.nanoTime();
 			  DecimalFormat df = new DecimalFormat("#.###");
-		      System.out.println(df.format((double)(stopTime3 - startTime3) / 1000000000));
+		      //System.out.println(df.format((double)(stopTime3 - startTime3) / 1000000000));
+			  String T = df.format((double)(stopTime3 - startTime3) / 1000000000);
+		      output(ans, time, T);
 		}
+	
+	public static void output(String path, boolean ifTime, String time) throws FileNotFoundException, UnsupportedEncodingException {
+		PrintWriter writer = new PrintWriter("output.txt", "UTF-8");
+		writer.println(path);
+		writer.println("Num: " + ansNum);
+		if(!path.equals("no path")) {
+			writer.println("Cost: " + ansCost);
+		}	
+		if(ifTime) {
+			writer.println(time); //change to actual time
+		}
+		writer.close();
+	}
 	
 	
 	public static void main(String[] args) throws NumberFormatException, IOException {
