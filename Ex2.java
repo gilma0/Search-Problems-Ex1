@@ -1,3 +1,8 @@
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Hashtable;
@@ -80,6 +85,21 @@ public class Ex2 {
 			colors.put(11, "Red");
 			this.marked = ""; //for IDA*
 		}
+		
+		public Matrix(int[][] mat) {
+			this.state = new int [mat.length][mat[0].length];
+			for (int i = 0; i < mat.length; i++) {
+				for (int j = 0; j < mat[0].length; j++) {
+					this.state[i][j] = mat[i][j];
+					if(mat[i][j] == -1) {
+						this.emptyi = i;
+						this.emptyj = j;
+					}
+				}
+			}
+			this.father = null;		
+		}
+			
 		
 		
 			
@@ -452,40 +472,7 @@ public class Ex2 {
 				ArrayList<Matrix> array = new ArrayList<Matrix>();
 				for (int j = 0; j < 4; j++) {
 					if(check_ok(new Matrix(temp), j)){
-						array.add(getMove(temp, j));  /*= null;
-							if(j==1) {//up this is the move ie-1,je
-								if (matrix.checkIfBlackOrNullPtr(matrix.ie-1,matrix.je)) {//chack if can move and if he dosent go back to the father						
-									mat = new Matrix(matrix);
-									mat.move(matrix.ie-1,matrix.je,"D");//the move
-									num++;
-									N.add(mat);
-								}
-							}
-							else if(j==2) {//down this is the move ie+1,je
-								if(matrix.checkIfBlackOrNullPtr(matrix.ie+1,matrix.je)) {						
-									mat = new Matrix(matrix);
-									mat.move(matrix.ie+1,matrix.je,"U");
-									num++;
-									N.add(mat);
-								}
-							}
-							else if(j==3) {//left this is the move ie,je-1
-								if(matrix.checkIfBlackOrNullPtr(matrix.ie,matrix.je-1)) {					
-									mat = new Matrix(matrix);
-									mat.move(matrix.ie,matrix.je-1,"R");
-									num++;
-									N.add(mat);
-								}
-							}
-							else if(j==4) {//right this is the move ie,je+1
-								if(matrix.checkIfBlackOrNullPtr(matrix.ie,matrix.je+1)) {								
-									mat=new Matrix(matrix);
-									mat.move(matrix.ie,matrix.je+1,"L");
-									num++;
-									N.add(mat);
-								}
-							}
-						}*/
+						array.add(getMove(temp, j));
 						array.sort(new Comparator<Matrix>() {public int compare(Matrix m1, Matrix m2) {return f(m1)-f(m2);}});	
 						for (int i = 0; i < array.size(); i++) {////check this for
 							int eCost = f(array.get(i));
@@ -511,8 +498,6 @@ public class Ex2 {
 								//N.get(i).findf(N.get(i)).updatef(num, N.get(i).cost, N.get(i).path().substring(1));
 								t = f(array.get(i));
 								//t = f(temp2);
-								//System.out.println(path2(array.get(i)));
-								//System.out.println(path2(temp2));
 								result = path2(array.get(i));
 								return result.substring(1);
 								/*for (int k = i; k < array.size(); k++) { ///~~~~~~~not sure about this, no need to continue
@@ -840,10 +825,119 @@ public class Ex2 {
 		return "no path";
 	}
 	
-	public static void main(String[] args) {
-		Matrix aba = new Matrix();
+	public static void Game(String path) throws NumberFormatException, IOException{
+		Matrix start;
+		String algo = null;
+		boolean time;
+		boolean openclosed;
+		//public Hashtable<Integer, String> Colors = new Hashtable<Integer, String>();
+		//ArrayList<Block[][]> exist= new ArrayList<Block[][]>();
+		long startTime3 = System.nanoTime();
+		int sizei=0, sizej = 0;
+		int[] Black = null;
+		int[] Red= null;
+		String[] m = null;
+		File file = new File(path); 
+		BufferedReader br = new BufferedReader(new FileReader(file)); 
+		 String st; 
+		 int counter=1;
+		 int countmatrix=0;
+		  while ((st = br.readLine()) != null) {
+		    if(counter==1) {algo=st;}
+		    else if(counter==2) {if( st.equalsIgnoreCase("no time")) {time=false;}else {time=true;}}
+		    else if(counter==3 ) {if( st.equalsIgnoreCase("no open")) {openclosed=false;}else {openclosed=true;}}
+		    else if(counter==4) {
+		    	int x=st.indexOf('x');
+		    	sizei=Integer.parseInt(st.substring(0, x));
+			   	sizej=Integer.parseInt(st.substring(x+1));
+			   	m=new String[sizej];
+		   } else if(counter==5) {
+			   	st=st.substring(6);
+			   	if(st.length()==0||st.equalsIgnoreCase(" ") || st.equalsIgnoreCase(null)) {
+			   		Black =new int[1];
+			   		Black[0]=0;
+			   	} else{
+			    	st=st.substring(1);	
+			    	String[] temp=st.split(",");				    	
+			    	Black=new int[temp.length];
+			    	for (int i = 0; i < temp.length; i++) {
+			    		Black[i]=Integer.parseInt(temp[i]);
+			    		colors.put(Integer.parseInt(temp[i]), "Black");   			
+					}
+			   	}
+			   }
+			   else if(counter==6) {
+				   st=st.substring(4);
+				   if(st.length()==0||st.equalsIgnoreCase(" ") || st.equalsIgnoreCase(null)) {
+		    			Red =new int[1];
+		    			Red[0]=0; 
+				   } else{
+					   st=st.substring(1);	    	
+					   String[] temp=st.split(",");				    	
+					   Red=new int[temp.length];
+					   for (int i = 0; i < temp.length; i++) {
+						   Red[i]=Integer.parseInt(temp[i]);
+						   colors.put(Integer.parseInt(temp[i]), "Red");  
+					   }
+				   }
+			   }else {
+			    	m[countmatrix]=st;
+			    	countmatrix++;
+			   }
+		    		counter++;
+		  }
+			  int[][] temp=new int[sizei][sizej];
+			  for (int i = 0; i < temp.length; i++) {
+				String[] s=m[i].split(",");
+				for (int j = 0; j < temp[0].length; j++) {
+					if(s[j].equalsIgnoreCase("_")) {temp[i][j]=-1;}
+					else{temp[i][j]=Integer.parseInt(s[j]);}
+				}
+			  }
+			  for (int i = 0; i < temp.length; i++) {
+				  for (int j = 0; j < temp[0].length; j++) {
+					  if(!colors.containsKey(temp[i][j])) {
+						  colors.put(temp[i][j], "Green");
+					  }
+				  }
+			  }
+			 // System.out.println(colors.toString());
+			  start = new Matrix(temp);
+			  /*for (int i = 0; i < start.state.length; i++) {
+				for (int j = 0; j < start.state[0].length; j++) {
+					System.out.print(start.state[i][j] + " ");
+				}
+				System.out.println();
+			}*/
+			  if(algo.equals("BFS")) {
+				  System.out.println(BFS(start));
+			  }
+			  else if(algo.equals("A*")) {
+				  System.out.println(A(start));
+			  }
+			  else if(algo.equals("DFID")) {
+				  System.out.println(DFID(start));
+			  }
+			  else if(algo.equals("IDA*")) {
+				  System.out.println(IDA(start));
+			  }
+			  else {
+				  System.out.println(DFBnB(start));
+			  }
+			  //System.out.println(start.num);
+			  System.out.println("cost: " + start.cost);
+			  //System.out.println(start.path);
+			  long stopTime3 = System.nanoTime();
+			  DecimalFormat df = new DecimalFormat("#.###");
+		      System.out.println(df.format((double)(stopTime3 - startTime3) / 1000000000));
+		}
+	
+	
+	public static void main(String[] args) throws NumberFormatException, IOException {
+		Game("C:\\Users\\Gil-PC\\Desktop\\פיתרון בעיות באמצעות חיפוש\\input4.txt");
+		//Matrix aba = new Matrix();
 		//System.out.println(A(aba));
-		System.out.println(DFBnB(aba));
+		//System.out.println(DFBnB(aba));
 		//System.out.println(h(aba));
 		//System.out.println(h(empty_left(new Matrix(aba))));
 		//System.out.println("empty right: " + f(empty_right(empty_up(empty_left(new Matrix(aba))))));
