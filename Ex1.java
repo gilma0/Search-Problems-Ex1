@@ -10,6 +10,8 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Hashtable;
 import java.util.LinkedList;
+import java.util.Map;
+import java.util.PriorityQueue;
 import java.util.Queue;
 import java.util.Stack;
 import java.util.concurrent.TimeUnit;
@@ -30,18 +32,41 @@ public class Ex1 {
 		Matrix father;
 		int emptyi;
 		int emptyj;
-		String marked;
+		//String marked; //no need for this
+		
+		public String toString() {
+			String ans = "\n";
+			for (int i = 0; i < state.length; i++) {
+				for (int j = 0; j < state[0].length; j++) {
+					if(j == state[0].length -1) {
+						if(this.state[i][j] == -1) { //end on line
+							ans += "_";
+						}else {
+							ans += this.state[i][j];
+						}
+					}else {
+						if(this.state[i][j] == -1) {
+							ans += "_,";
+						}else {
+							ans += this.state[i][j] + ",";
+						}
+					}
+				}
+				ans += "\n";
+			}
+			return ans;
+		}
 
 		@Override
 	    public boolean equals(Object o) { 
-			if (o == this) { 
+			if (o == this) { //check for same object
 	            return true; 
 	        } 
-			if (!(o instanceof Matrix)) { 
+			if (!(o instanceof Matrix)) { //check if the object is a matrix
 	            return false; 
 	        } 
 			Matrix temp = (Matrix) o;
-			for (int i = 0; i < this.state.length; i++) {
+			for (int i = 0; i < this.state.length; i++) { //checking each block of the matrixes for equality
 				for (int j = 0; j < this.state[0].length; j++) {
 					if(temp.state[i][j] != this.state[i][j]) {
 						return false;
@@ -51,23 +76,8 @@ public class Ex1 {
 			return true;
 		} 
 		
-		//temp default for check
-		/*public Matrix() {
-			this.state = new int[2][2];
-			int a = 1;
-			for (int i = 0; i < state.length; i++) {
-				for (int j = 0; j < state[0].length; j++) {
-					this.state[i][j] = a++;
-				}
-			}
-			this.emptyi = 0;
-			this.emptyj = 0;
-			this.cost = 0;
-			this.state[0][0] = -1;
-			this.state[1][1] = 5;
-		}*/
 		//this matrix() is for the input.txt (the first) and for input3.txt
-		public Matrix() {
+		public Matrix() { //no need for this one anymore
 			this.state = new int[3][4];
 			this.state[0][0] = 1;
 			this.state[0][1] = 2;
@@ -88,7 +98,7 @@ public class Ex1 {
 			colors.put(i+1, "Green");
 			}
 			colors.put(11, "Red");
-			this.marked = ""; //for IDA*
+			//this.marked = ""; //for IDA*
 		}
 		
 		public Matrix(int[][] mat) {
@@ -140,13 +150,13 @@ public class Ex1 {
 			colors.put(11, "Black");
 		}*/
 		
-		
+		//copy constructor for children, father is the given matrix.
 		public Matrix(Matrix m) {
 			this.cost = m.cost;
 			this.emptyi = m.emptyi;
 			this.emptyj = m.emptyj;
 			this.father = m;
-			this.marked = m.marked; //for IDA*
+			//this.marked = m.marked; //for IDA*
 			this.state = new int[m.state.length][m.state[0].length];
 			for (int i = 0; i < m.state.length; i++) {
 				for (int j = 0; j < m.state[0].length; j++) {
@@ -194,7 +204,9 @@ public class Ex1 {
 		}
 		return true;
 	}*/
-	public static boolean check_ok(Matrix m, int position) { //0=left 1=up 2=right 3=down
+	
+	//checks that the child isn't the same as the father or a black block and that its within the bounds of the board
+	public static boolean check_ok(Matrix m, int position) { //0=right 1=down 2=left 3=up
 		//updating the empty position
 		if(position == 0) {
 			//m.emptyi--;
@@ -271,20 +283,18 @@ public class Ex1 {
 			return (empty_down(new Matrix(mat)));
 		}
 	}*/
-	public static Matrix getMove(Matrix mat, int n) { //newer old
+	
+	public static Matrix getMove(Matrix mat, int n) { //creating the child matrix, each n represent a different move.
 		if(n == 0) {
 			return (empty_right(new Matrix(mat)));
 		}
 		else if(n == 1) {
-			//temp2 = new Matrix(empty_down(temp));
 			return (empty_down(new Matrix(mat)));
 		}
 		else if(n == 2) {
-			//temp2 = new Matrix(empty_left(temp));
 			return (empty_left(new Matrix(mat)));
 		}
-		else	{
-			//temp2 = new Matrix(empty_right(temp));
+		else{
 			return (empty_up(new Matrix(mat)));
 		}
 	}
@@ -305,7 +315,7 @@ public class Ex1 {
 		return ans;
 	}*/
 	
-	//this function move the empty space up
+	//this function move the empty space up and updates the cost of the matrix according to the color of the block moved
 	public static Matrix empty_up(Matrix mat) {
 		int temp = mat.state[mat.emptyi - 1][mat.emptyj];
 		if(colors.get(temp).equals("Green")) {
@@ -320,7 +330,7 @@ public class Ex1 {
 		return mat;
 	}
 	
-	//this function move the empty space down
+	//this function move the empty space down and updates the cost of the matrix according to the color of the block moved
 	public static Matrix empty_down(Matrix mat) {
 		int temp = mat.state[mat.emptyi + 1][mat.emptyj];
 		if(colors.get(temp).equals("Green")) {
@@ -335,7 +345,7 @@ public class Ex1 {
 		return mat;
 	}
 	
-	//this function moves the empty space right
+	//this function moves the empty space right and updates the cost of the matrix according to the color of the block moved
 	public static Matrix empty_right(Matrix mat) {
 		int temp = mat.state[mat.emptyi][mat.emptyj + 1];
 		if(colors.get(temp).equals("Green")) {
@@ -350,7 +360,7 @@ public class Ex1 {
 		return mat;
 	}
 	
-	//this function moves the empty space left
+	//this function moves the empty space left and updates the cost of the matrix according to the color of the block moved
 	public static Matrix empty_left(Matrix mat) {
 		int temp = mat.state[mat.emptyi][mat.emptyj - 1];
 		if(colors.get(temp).equals("Green")) {
@@ -382,6 +392,7 @@ public class Ex1 {
 		return true;
 	}*/
 	
+	//sent with the answer board state and a given state of the board and check's for equality, if equality is present than the algorithm found the answer.
 	public static boolean goal(Matrix mat, Matrix finished) {
 		for (int i = 0; i < mat.state.length; i++) {
 			for (int j = 0; j < mat.state[0].length; j++) {
@@ -411,6 +422,7 @@ public class Ex1 {
 		}
 	}*/
 	
+	//used in path (reverse), returns the letter of the direction changed between father and son states
 	public static String direction(Matrix mat) { //for BFS
 		if(mat.father.emptyi == mat.emptyi + 1) {
 			return "U";
@@ -424,7 +436,8 @@ public class Ex1 {
 		return "R";
 	}
 	
-	public static String direction2(Matrix mat) { //for IDA* AND A*
+	//used in path2, returns the letter of the direction changed between father and son states
+	public static String direction2(Matrix mat) {
 		if(mat.father.emptyi == mat.emptyi + 1) {
 			return "D";
 		}
@@ -437,7 +450,7 @@ public class Ex1 {
 		return "L";
 	}
 	
-	//maybe needs to do with the hashtable table of BFS, this path is for BFS
+	//returns the path from start to finish
 	public static String path(Matrix mat) {
 		/*System.out.println("-------------------");
 		for (int i = 0; i < mat.state.length; i++) {
@@ -453,15 +466,17 @@ public class Ex1 {
 			return "";
 		}
 	}
+	
+	//returns the path from start to finish
 	public static String path2(Matrix mat) {
-		System.out.println("-------------------");
+		/*System.out.println("-------------------");
 		for (int i = 0; i < mat.state.length; i++) {
 			for (int j = 0; j < mat.state[0].length; j++) {
 				System.out.print(mat.state[i][j] + " ");
 			}
 			System.out.println();
 		}
-		System.out.println("-------------------");
+		System.out.println("-------------------");*/
 		if(mat.father != null) {
 			return path2(mat.father) + "-" + mat.father.state[mat.emptyi][mat.emptyj] + direction2(mat);
 		}else {
@@ -469,6 +484,7 @@ public class Ex1 {
 		}
 	}
 	
+	//returns the answer matrix given the dimensions of the board
 	public static Matrix finished_mat(Matrix mat) {
 		Matrix ans = new Matrix(mat);
 		ans.father = null;
@@ -485,96 +501,164 @@ public class Ex1 {
 		return ans;		
 	}
 	
-	//starts from answer puzzle to lower the number of nodes created
-	//need the check num!!!!!!!~~~~~~~~~~~~~~~~~~~~~~~
-	public static String BFS(Matrix start) {
+	/*public static String BFS(Matrix start, boolean openclosed) {
 		Hashtable<Integer, Matrix> table = new Hashtable<Integer, Matrix>();
 		Queue<Matrix> q = new LinkedList<Matrix>();
-		//q.add(finished_mat(start));
 		q.add(start);
 		int i = 0;
 		int num = 1;
 		while(!q.isEmpty()) {
+			if(openclosed == true) {
+				System.out.println(q.toString()); //print the matrix in the queue
+			}
 			Matrix temp = q.poll();
 			table.put(i++, temp);
 			for (int j = 0; j < 4; j++) {
 				Matrix temp2 = null;
 				if(check_ok(new Matrix(temp), j)){
-					/*if(j == 0) {
-						temp2 = (empty_up(new Matrix(temp)));
-					}
-					if(j == 1) {
-						//temp2 = new Matrix(empty_down(temp));
-						temp2 = (empty_down(new Matrix(temp)));
-					}
-					if(j == 2) {
-						//temp2 = new Matrix(empty_left(temp));
-						temp2 = (empty_left(new Matrix(temp)));
-					}
-					if(j == 3) {
-						//temp2 = new Matrix(empty_right(temp));
-						temp2 = (empty_right(new Matrix(temp)));
-					}*/
 					temp2 = getMove(temp, j);
 					num++;
 					if(!q.contains(temp2) && !table.contains(temp2)) {
-						//num++;
-						//if(goal(temp2)) {
-						//if(goal(temp2, start)) {
 						if(goal(temp2, finished_mat(start))) {
 							System.out.println("cost: " + temp2.cost);
 							System.out.println("num: " + num);
 							String ans = path2(temp2);
 							ansNum = num;
 							ansCost = temp2.cost;
-							//return ans.substring(0, ans.length()-1); //removes the final "-"
 							return ans.substring(1);
 						}else {
 							q.add(temp2);
-							//num++;
 						}
 					}
 				}
 			}
 		}
-		System.out.println("num: " + num);
+		ansNum = num;
+		return "no path";
+	}*/
+	
+	/*public static String BFS(Matrix start, boolean openclosed) {
+		Hashtable<Integer, Matrix> table = new Hashtable<Integer, Matrix>();
+		Hashtable<Integer, Matrix> q = new Hashtable<Integer, Matrix>();
+		int hash = 0;
+		int n = 0;
+		q.put(hash++, start);
+		int i = 0;
+		int num = 1;
+		while(!q.isEmpty()) {
+			//if(openclosed == true) {
+				System.out.println(q.toString()); //print the matrix in the queue
+		//	}
+			Matrix temp = q.get(n);
+			q.remove(n++);
+			table.put(i++, temp);
+			for (int j = 0; j < 4; j++) {
+				Matrix temp2 = null;
+				if(check_ok(new Matrix(temp), j)){
+					temp2 = getMove(temp, j);
+					num++;
+					if(!q.contains(temp2) && !table.contains(temp2)) {
+						if(goal(temp2, finished_mat(start))) {
+							System.out.println("cost: " + temp2.cost);
+							System.out.println("num: " + num);
+							String ans = path2(temp2);
+							ansNum = num;
+							ansCost = temp2.cost;
+							return ans.substring(1);
+						}else {
+							q.put(hash++,temp2);
+						}
+					}
+				}
+			}
+		}
+		ansNum = num;
+		return "no path";
+	}*/
+	
+	
+	//BFS, uses hashtable for the openlist
+	public static String BFS(Matrix start, boolean openclosed) {
+		Hashtable<Integer, Matrix> table = new Hashtable<Integer, Matrix>();
+		Hashtable<Integer, Matrix> openlist = new Hashtable<Integer, Matrix>();
+		Queue<Matrix> q = new LinkedList<Matrix>();
+		q.add(start);
+		int put = 0; //put counter for open list
+		int remove = 0; //remove counter for open list
+		openlist.put(put++, start);
+		int i = 0; //put counter for table
+		int num = 1; //counter for created states of the board
+		while(!q.isEmpty()) {
+			if(openclosed == true) { //print to screen the matrixes in the openlist
+				//System.out.println("openlist:\n" + openlist.toString() +"\nsize openlist: " + openlist.size()); //print the matrix in the queue
+				//System.out.println("q:\n" + q.toString() +"\nsize q: " +  q.size());
+			//System.out.println("openlist size: " + openlist.size());
+			//System.out.println("q size: " + q.size());
+			System.out.println(openlist.values().toString());
+			}
+			openlist.remove(remove++);
+			Matrix temp = q.poll();
+			table.put(i++, temp);
+			for (int j = 0; j < 4; j++) { //each child option, in reality only 3 children for each state can exist, in edge of board empty slot we get less than 3.
+				Matrix temp2 = null;
+				if(check_ok(new Matrix(temp), j)){ //if true the child is valid, not a duplicate of the father and not out of bounds.
+					temp2 = getMove(temp, j); //creating the child
+					num++; //counting the states created along the way of the algorithm
+					if(!q.contains(temp2) && !table.contains(temp2)) { //deeper search for duplicates
+						if(goal(temp2, finished_mat(start))) {
+							String ans = path2(temp2);
+							ansNum = num;
+							ansCost = temp2.cost;
+							return ans.substring(1);
+						}else {
+							q.add(temp2);
+							openlist.put(put++, temp2); //adding generated child to the open list
+						}
+					}
+				}
+			}
+		}
 		ansNum = num;
 		return "no path";
 	}
 	
-	public static String DFBnB(Matrix mat) {
+	public static String DFBnB(Matrix mat, boolean openclosed) {
 		Hashtable<Matrix, String> table = new Hashtable<Matrix, String>();
 		Stack<Matrix> stack = new Stack<Matrix>();
 		String result = null;
-		int t = Integer.MAX_VALUE;
-		//int num =0;
+		int t = Integer.MAX_VALUE; //upper bound
+		ansNum = 1;
 		stack.add(mat);
-		table.put(mat, "");
+		table.put(mat, ""); //inserted to hashtable with no "out" as value at first
 		while(!stack.isEmpty()) {
+			if(openclosed == true) { //print the openlist condition
+				System.out.println(stack.toString());
+			}
 			Matrix temp = stack.pop();
-			if(table.get(temp).equals("out")) {
+			if(table.get(temp).equals("out")) { //if already checked this state remove it
 				table.remove(temp);
 			}else {
-				table.remove(temp);
+				table.remove(temp); //else check this state,remove it and insert it as checked to the table
 				table.put(temp, "out");
 				ArrayList<Matrix> array = new ArrayList<Matrix>();
 				for (int j = 0; j < 4; j++) {
 					if(check_ok(new Matrix(temp), j)){
+						ansNum++; //generated nodes counter
 						array.add(getMove(temp, j));
 						array.sort(new Comparator<Matrix>() {public int compare(Matrix m1, Matrix m2) {return f(m1)-f(m2);}});	
-						for (int i = 0; i < array.size(); i++) {////check this for
+						for (int i = 0; i < array.size(); i++) { //checking if any of the nodes goes above the upper bound, if so remove all of those that do.
 							int eCost = f(array.get(i));
 							if(eCost >= t) {
 								for (int k = i; k < array.size(); k++) {
 									array.remove(k);
 								}
 							}
-							else if(table.contains(array.get(i)) && table.get(array.get(i)).equals("out")) {
+							else if(table.contains(array.get(i)) && table.get(array.get(i)).equals("out")) { //child already created and checked
 								array.remove(i);
 							}
-							else if(table.contains(array.get(i)) && !table.get(array.get(i)).equals("out")) {
-								for (Matrix key : table.keySet()) {
-									if(key.equals(array.get(i)) && f(key) <= eCost) {								
+							else if(table.contains(array.get(i)) && !table.get(array.get(i)).equals("out")) { //child already created but not checked yet
+								for (Matrix key : table.keySet()) { //if f(child) is less than f(child) that already exist's -> update
+									if(key.equals(array.get(i)) && f(key) <= eCost) {							
 										array.remove(i);
 									}else {
 										stack.remove(key);
@@ -583,30 +667,20 @@ public class Ex1 {
 								}
 							}
 							else if(goal(array.get(i), finished_mat(mat))) {
-								//N.get(i).findf(N.get(i)).updatef(num, N.get(i).cost, N.get(i).path().substring(1));
-								t = f(array.get(i));
-								//t = f(temp2);
+								t = f(array.get(i)); //bound, there isn't a need for this actually
 								result = path2(array.get(i));
-								ansNum = 0; //needs replacing
 								ansCost = array.get(i).cost;
 								return result.substring(1);
-								/*for (int k = i; k < array.size(); k++) { ///~~~~~~~not sure about this, no need to continue
-									array.remove(k);
-									//i++;//??????????????
-								}*/
 							}
 						}
-						for (int k = array.size() - 1; k >= 0; k--) {
-							//if(k<array.size() && array.get(k)!=null) {
+						for (int k = array.size() - 1; k >= 0; k--) { //insert new children to be checked
 								stack.add(array.get(k));
 								table.put(array.get(k), "");
-							//}
 						}
 					}
 				}
 			}
 		}
-		ansNum = 0;
 		return "no path";
 	}
 	
@@ -649,10 +723,12 @@ public class Ex1 {
 		}
 		return Edistance;
 	}*/
+	
+	//this function estimates the cost between this given state to the goal state, based on Manhattan distance.
+	//in short, this function sums the distance from each misplaced block to its proper position while taking the color of it into the calculation.
 	public static int h(Matrix mat) {
 		int Edistance = 0;
 		Matrix temp = finished_mat(mat);
-		//int num = 1;
 		for (int i = 0; i < mat.state.length; i++) {
 			for (int j = 0; j < mat.state[0].length; j++) {
 				if(mat.state[i][j] == -1) {
@@ -669,7 +745,6 @@ public class Ex1 {
 							}
 						}
 					}
-					//Edistance += (Math.abs(i-x1) + Math.abs(j-y1)) * ;
 					if(colors.get(mat.state[i][j]).equals("Red")) {
 						Edistance += (Math.abs(x1-(i+1)) + Math.abs(y1-(j+1))) * 30;
 					}else {
@@ -683,8 +758,7 @@ public class Ex1 {
 	
 	//f(n) = g(n) + h(n) //cost until now + estimated cost
 	public static int f(Matrix mat) {
-		return mat.cost + h(mat);
-		//return mat.cost + calculateManhattanDistance(mat);
+		return mat.cost + h(mat);		
 	}
 	
 	
@@ -692,7 +766,7 @@ public class Ex1 {
 	//extremely similar to BFS, only difference is that we choose the best child to continue, the one with the lowest estimated cost to goal. 
 	//need to check if start from start or from the end
 	////////// PROBLEM THAT CAN OCCUR AND I NEED TO CHECK IS IF THERE IS A NEED NOT TO DUMP ALL THE NODES!!!!~~~~ (choose the highest floor if duplicate)
-	public static String A(Matrix start){
+	/*public static String A(Matrix start, boolean openclosed){
 		Hashtable<Integer, Matrix> table = new Hashtable<Integer, Matrix>();
 		Queue<Matrix> q = new LinkedList<Matrix>();
 		q.add(start); //this one has to start with the starting q
@@ -715,21 +789,6 @@ public class Ex1 {
 			for (int j = 0; j < 4; j++) { //first create all children!~!~!~!~!~!~!~!~!~
 				Matrix temp2 = null;
 				if(check_ok(new Matrix(temp), j)){
-					/*if(j == 0) {
-						temp2 = (empty_up(new Matrix(temp)));
-					}
-					if(j == 1) {
-						//temp2 = new Matrix(empty_down(temp));
-						temp2 = (empty_down(new Matrix(temp)));
-					}
-					if(j == 2) {
-						//temp2 = new Matrix(empty_left(temp));
-						temp2 = (empty_left(new Matrix(temp)));
-					}
-					if(j == 3) {
-						//temp2 = new Matrix(empty_right(temp));
-						temp2 = (empty_right(new Matrix(temp)));
-					}*/
 					temp2 = getMove(temp, j);
 					num++; //the correct son is entered before the other is created, i need to create them both so i choose the correct with the right amount of nodes
 					if(!q.contains(temp2) && !table.contains(temp2)) {
@@ -761,66 +820,259 @@ public class Ex1 {
 		System.out.println("num: " + num);
 		ansNum = num;
 		return "no path";
-	}
-	//not finished, need alot of checking with the badkan
-	public static String DFID(Matrix start) {
-		int depth = 1;
-		while(depth != Integer.MAX_VALUE) { //not while true
-
-			Hashtable<Integer, Matrix> table = new Hashtable<Integer, Matrix>();
-			String result = Limited_DFS(start, depth, table);
-			if(result != null && !result.equals("cutoff") && !result.equals("fail")) {
-				ansNum = 0; //this is temporary for now, needs checking
-				ansCost = 0;
-				return result.substring(1);
+	}*/
+	
+	public static String A(Matrix start, boolean openclosed){
+		Hashtable<Integer, Matrix> table = new Hashtable<Integer, Matrix>();
+		Hashtable<Matrix, Matrix> openlist = new Hashtable<Matrix, Matrix>();
+		PriorityQueue<Matrix> q = new PriorityQueue<Matrix>(new Comparator<Matrix>() {public int compare(Matrix m1, Matrix m2) {return f(m1)-f(m2);}});
+		q.add(start); 
+		openlist.put(start, start);
+		int i = 0;
+		int num = 1;
+		while(!q.isEmpty()) {
+			if(openclosed == true) { //printing the open list condition
+				System.out.println(openlist.values().toString());
+				//System.out.println("openlist size: " + openlist.size());
+				//System.out.println("q size: " + q.size());
 			}
-			depth++;
+			Matrix temp = q.poll();
+			openlist.remove(temp);
+			//int min = f(temp);
+			/*while(!q.isEmpty()) { //find the best option to continue
+				int fSibling = f(q.peek());
+				if(fSibling < min) {
+					temp = q.poll();
+					min = fSibling;
+				}else {
+					q.poll(); //to counter the problem maybe i should insert to the end after i pop it
+				}
+			} //continue like BFS*/
+			table.put(i++, temp);
+			for (int j = 0; j < 4; j++) {
+				Matrix temp2 = null;
+				if(check_ok(new Matrix(temp), j)){
+					temp2 = getMove(temp, j);
+					num++; //generated nodes counter
+					if(!q.contains(temp2) && !table.contains(temp2)) {
+						if(goal(temp2, finished_mat(start))) {
+							j++;
+							while(j < 4) { //counting remaining brothers
+								if(check_ok(new Matrix(temp), j)) {
+									num++;
+								}
+								j++;
+							}
+							String ans = path2(temp2);
+							ansNum = num;
+							ansCost = temp2.cost;
+							return ans.substring(1);
+						}else {
+							q.add(temp2);
+							openlist.put(temp2, temp2);
+						}
+					}
+				}
+			}
 		}
-		//should return no path
-		ansNum = 0;
+		System.out.println("num: " + num);
+		ansNum = num;
 		return "no path";
 	}
 	
-	public static String Limited_DFS(Matrix n, int limit, Hashtable<Integer, Matrix> table) {
-		if(goal(n, finished_mat(n))) {
+	/*public static String A(Matrix start, boolean openclosed){
+		Hashtable<Integer, Matrix> table = new Hashtable<Integer, Matrix>();
+		Hashtable<Integer, Matrix> q = new Hashtable<Integer, Matrix>();
+		int hash = 0;
+		int n = 0;
+		q.put(hash++, start); //this one has to start with the starting q
+		//q.add(start);
+		int i = 0;
+		int num = 1;
+		while(!q.isEmpty()) {
+			Matrix temp = q.values().iterator().next();
+			q.remove(q.keySet().iterator().next());
+			int min = f(temp);
+			/*while(!q.isEmpty()) { //find the best option to continue
+				int fSibling = f(q.peek());
+				if(fSibling < min) {
+					temp = q.poll();
+					min = fSibling;
+				}else {
+					q.poll(); //to counter the problem maybe i should insert to the end after i pop it
+				}
+			} //continue like BFS
+			for (Map.Entry<Integer, Matrix> entry : q.entrySet()) {
+				int fSibling = f(entry.getValue());
+				if(fSibling < min) {
+					temp = entry.getValue();
+					q.remove(entry.getKey());
+					min = fSibling;
+				}else {
+					q.remove(entry.getKey());
+				}
+			}
+			q.forEach((key, value) ->{
+				int fSibling = f(value);
+				if(fSibling < min) {
+					temp = value;
+					q.remove(key);
+					min = fSibling;
+				}else {
+					q.remove(key);
+				}
+			});
+			table.put(i++, temp);
+			for (int j = 0; j < 4; j++) { //first create all children!~!~!~!~!~!~!~!~!~
+				Matrix temp2 = null;
+				if(check_ok(new Matrix(temp), j)){
+					temp2 = getMove(temp, j);
+					num++; //the correct son is entered before the other is created, i need to create them both so i choose the correct with the right amount of nodes
+					if(!q.contains(temp2) && !table.contains(temp2)) {
+						//if(goal(temp2)) {
+						if(goal(temp2, finished_mat(start))) {
+							j++;
+							while(j < 4) { //counting brothers (finishes before creating them)
+								if(check_ok(new Matrix(temp), j)) {
+									num++;
+								}
+								j++;
+							}
+							System.out.println("cost: " + temp2.cost);
+							System.out.println("num: " + num);
+							String ans = path2(temp2);
+							ansNum = num;
+							//ansNum = table.size();
+							ansCost = temp2.cost;
+							return ans.substring(1); //removes the final "-"
+							//return ans;
+						}else {
+							q.put(hash++,temp2);
+							//num++;
+						}
+					}
+				}
+			}
+		}
+		System.out.println("num: " + num);
+		ansNum = num;
+		return "no path";
+	}*/
+	
+	
+	
+	/*public static String A(Matrix start, boolean openclosed){
+		Hashtable<Integer, Matrix> table = new Hashtable<Integer, Matrix>();
+		//Queue<Matrix> q = new LinkedList<Matrix>();
+		Hashtable<Integer, Matrix> q = new Hashtable<Integer, Matrix>();
+		int hash = 0;
+		q.put(hash++, start); //this one has to start with the starting q
+		//q.add(start);
+		int n = 0;
+		int i = 0;
+		int num = 1;
+		while(!q.isEmpty()) {
+			Matrix temp = q.get(n);
+			int min = f(temp);
+			while(!q.isEmpty()) { //find the best option to continue
+				int fSibling = f(q.peek());
+				if(fSibling < min) {
+					temp = q.poll();
+					min = fSibling;
+				}else {
+					q.poll(); //to counter the problem maybe i should insert to the end after i pop it
+				}
+			} //continue like BFS
+			table.put(i++, temp);
+			for (int j = 0; j < 4; j++) { //first create all children!~!~!~!~!~!~!~!~!~
+				Matrix temp2 = null;
+				if(check_ok(new Matrix(temp), j)){
+					temp2 = getMove(temp, j);
+					num++; //the correct son is entered before the other is created, i need to create them both so i choose the correct with the right amount of nodes
+					if(!q.contains(temp2) && !table.contains(temp2)) {
+						//if(goal(temp2)) {
+						if(goal(temp2, finished_mat(start))) {
+							j++;
+							while(j < 4) { //counting brothers (finishes before creating them)
+								if(check_ok(new Matrix(temp), j)) {
+									num++;
+								}
+								j++;
+							}
+							System.out.println("cost: " + temp2.cost);
+							System.out.println("num: " + num);
+							String ans = path2(temp2);
+							ansNum = num;
+							//ansNum = table.size();
+							ansCost = temp2.cost;
+							return ans.substring(1); //removes the final "-"
+							//return ans;
+						}else {
+							q.add(temp2);
+							//num++;
+						}
+					}
+				}
+			}
+		}
+		System.out.println("num: " + num);
+		ansNum = num;
+		return "no path";
+	}*/
+	
+	
+	public static String DFID(Matrix start, boolean openclosed) {
+		int depth = 1; //starting depth, less than that won't do anything at the first iteration
+		Hashtable<Matrix, Matrix> openlist = new Hashtable<Matrix, Matrix>();
+		openlist.put(start, start); //at first the given state is the only one in the open list
+		if(openclosed == true) { //first iteration open list condition
+			System.out.println(openlist.values().toString());
+		}
+		ansNum = 1;
+		while(depth != Integer.MAX_VALUE) { 
+			Hashtable<Integer, Matrix> table = new Hashtable<Integer, Matrix>();
+			openlist = new Hashtable<Matrix, Matrix>();
+			String result = Limited_DFS(start, depth, table, openlist);
+			if(openclosed == true) { //print open list condition
+				System.out.println(openlist.values().toString());
+			}
+			if(result != null && !result.equals("cutoff") && !result.equals("fail")) { //a path to goal was returned
+				return result.substring(1);
+			}
+			else if(result=="fail") {
+				return "no path";
+			}
+			depth++; //go deeper in next iteration
+		}
+		return "no path";
+	}
+	
+	public static String Limited_DFS(Matrix n, int limit, Hashtable<Integer, Matrix> table, Hashtable<Matrix, Matrix> openlist) {
+		if(goal(n, finished_mat(n))) { //stop condition, goal reached
+			ansCost = n.cost;
 			return path2(n);
-		}else if(limit == 0) {
+		}else if(limit == 0) { //stop condition, depth has reached its end in this iteration
+			openlist.put(n, n);
 			return "cutoff";
 		}else {
-			table.put(limit, n); //needs change
+			table.put(limit, n); 
 			boolean isCutoff = false;
 			for (int j = 0; j < 4; j++) {
 				Matrix temp2 = null;
 				if(check_ok(new Matrix(n), j)){
-					/*if(j == 0) {
-						temp2 = (empty_up(new Matrix(n)));
-					}
-					if(j == 1) {
-						//temp2 = new Matrix(empty_down(temp));
-						temp2 = (empty_down(new Matrix(n)));
-					}
-					if(j == 2) {
-						//temp2 = new Matrix(empty_left(temp));
-						temp2 = (empty_left(new Matrix(n)));
-					}
-					if(j == 3) {
-						//temp2 = new Matrix(empty_right(temp));
-						temp2 = (empty_right(new Matrix(n)));
-					}*/
-					temp2 = getMove(n, j); //instead of if's
-					//num++;
+					temp2 = getMove(n, j);
 					if(!table.contains(temp2)) {
-						String result = Limited_DFS(temp2, limit - 1, table);
+						ansNum++;
+						String result = Limited_DFS(temp2, limit - 1, table, openlist); //keep going with the next level
 						if(result == "cutoff") {
 							isCutoff = true;
-						}else if(result != "fail") {//change fail!~!~!~!~!~!~
-							ansCost = temp2.cost;
+						}else if(result != "fail") {
 							return result;
 						}
 					}
 				}
 			}
-			table.remove(limit); //needs change
+			table.remove(limit);
 			if(isCutoff == true) {
 				return "cutoff";
 			}else {
@@ -830,88 +1082,55 @@ public class Ex1 {
 	}
 	
 	
-	public static String IDA(Matrix start) {
-		//Hashtable<Matrix, Integer> table = new Hashtable<Matrix, Integer>();
-		//Hashtable<Integer, Matrix> table = new Hashtable<Integer, Matrix>();
-		//Hashtable<Matrix, Matrix> table = new Hashtable<Matrix, Matrix>();
+	public static String IDA(Matrix start, boolean openclosed) {
 		Hashtable<Matrix, String> table = new Hashtable<Matrix, String>();
 		Stack<Matrix> s = new Stack<Matrix>();
-		//table.put(1, start);
-		int n = 1;
+		int n = 1; //generated states counter
 		int t = h(start);
-		while(t != Integer.MAX_VALUE) { //should be t != infinity
+		while(t != Integer.MAX_VALUE) { //upper bound for cost
 			int minF = Integer.MAX_VALUE;
 			s.add(start);
-			//table.put(start, n++);
-			//table.put(n++, start);
-			//table.put(start, start);
 			table.put(start, "");
 			while(!s.isEmpty()) {
+				if(openclosed == true) { //open list print condition
+					s.toString();
+				}
 				Matrix temp = s.pop();
-				/*if(temp.marked.equals("out")) {
-					table.remove(temp);
-				}else {*/
 				if(table.get(temp).equals("out")) {
 					table.remove(temp);
 				}else {
-					//temp.marked = "out";
 					table.remove(temp);
 					table.put(temp, "out");
 					s.add(temp);
 					for (int j = 0; j < 4; j++) {
-						Matrix temp2 = null; //temp2 == g
+						Matrix temp2 = null;
 						if(check_ok(new Matrix(temp), j)){
-							/*if(j == 0) {
-								temp2 = (empty_up(new Matrix(temp)));
-							}
-							if(j == 1) {
-								//temp2 = new Matrix(empty_down(temp));
-								temp2 = (empty_down(new Matrix(temp)));
-							}
-							if(j == 2) {
-								//temp2 = new Matrix(empty_left(temp));
-								temp2 = (empty_left(new Matrix(temp)));
-							}
-							if(j == 3) {
-								//temp2 = new Matrix(empty_right(temp));
-								temp2 = (empty_right(new Matrix(temp)));
-							}*/
 							temp2 = getMove(temp, j);
-							//n++;
-							//System.out.println("aba");
-							if(f(temp2) > t) {
+							if(f(temp2) > t) { //upper bound
 								minF = Math.min(minF, f(temp2));
 								n++;
-								//System.out.println("if1");
 								continue;
 							}
-							//n++;
-							//table.
-							//if(table.contains(temp2) && table.get(temp2).marked.equals("out")) {
-							if(table.contains(temp2) && table.get(temp2).equals("out")) {
+							if(table.contains(temp2) && table.get(temp2).equals("out")) { //already checked
 								n++;
-								//System.out.println("if2");
 								continue;
 							}
-							//if(table.contains(temp2) && !table.get(temp2).marked.equals("out")) {
-							if(table.contains(temp2) && !table.get(temp2).equals("out")) {//addition
+							if(table.contains(temp2) && !table.get(temp2).equals("out")) { //already exist but not checked
 								n++;
-								Matrix temp3 = null; //g'
+								Matrix temp3 = null; 
 								for (Matrix key : table.keySet()) {
 									if(key.equals(temp2)) {
 										temp3 = key;
 									}
-								}//end addition
-								//if(f(table.get(temp2)) > f(temp2)) { //first temp2 is g, second is g' needs checking!!!
-								if(f(temp3) > f(temp2)) {
-									//s.remove(table.get(temp2));
-									s.remove(temp3);//should remove g'
-									table.remove(temp3); //should remove g'
+								}
+								if(f(temp3) > f(temp2)) { //if f is less then update the state cost by removing the previous (added later in the algorithm)
+									s.remove(temp3);
+									table.remove(temp3);
 								}else {
 									continue;
 								}
 							}
-							if(goal(temp2, finished_mat(start))) { //this is g not g'
+							if(goal(temp2, finished_mat(start))) {
 								n++;
 								System.out.println("cost: " + temp2.cost);
 								System.out.println("num: " + n);
@@ -919,13 +1138,8 @@ public class Ex1 {
 								ansNum = n;
 								ansCost = temp2.cost;
 								return ans.substring(1);
-								//return path(temp2); //path of g, not g'
 							}
-							//n++;
-							s.add(temp2);    //this is g, not g'
-							//n++;
-							//table.put(temp2, temp2); //this is g, not g'
-							//table.put(temp2, "out");
+							s.add(temp2);
 							table.put(temp2, "");
 						}
 					}
@@ -941,9 +1155,7 @@ public class Ex1 {
 		Matrix start;
 		String algo = null;
 		boolean time = false;
-		boolean openclosed;
-		//public Hashtable<Integer, String> Colors = new Hashtable<Integer, String>();
-		//ArrayList<Block[][]> exist= new ArrayList<Block[][]>();
+		boolean openclosed = false;
 		long startTime3 = System.nanoTime();
 		int sizei=0, sizej = 0;
 		int[] Black = null;
@@ -1013,52 +1225,38 @@ public class Ex1 {
 					  }
 				  }
 			  }
-			 // System.out.println(colors.toString());
 			  start = new Matrix(temp);
-			  /*for (int i = 0; i < start.state.length; i++) {
-				for (int j = 0; j < start.state[0].length; j++) {
-					System.out.print(start.state[i][j] + " ");
-				}
-				System.out.println();
-			}*/
-			  String ans;
+			  String ans = null;
 			  if(algo.equals("BFS")) {
-				  //System.out.println(BFS(start));
-				  ans = BFS(start);
+				  ans = BFS(start, openclosed);
 			  }
 			  else if(algo.equals("A*")) {
-				  //System.out.println(A(start));
-				  ans = A(start);
+				  ans = A(start, openclosed);
 			  }
 			  else if(algo.equals("DFID")) {
-				  //System.out.println(DFID(start));
-				  ans = DFID(start);
+				  ans = DFID(start, openclosed);
 			  }
 			  else if(algo.equals("IDA*")) {
-				  //System.out.println(IDA(start));
-				  ans = IDA(start);
+				  ans = IDA(start, openclosed);
 			  }
-			  else {
-				  //System.out.println(DFBnB(start));
-				  ans = DFBnB(start);
+			  else if(algo.equals("DFBnB")) {
+				  ans = DFBnB(start, openclosed);
 			  }
-			  //System.out.println(start.num);
-			  System.out.println("cost: " + start.cost);
-			  //System.out.println(start.path);
 			  long stopTime3 = System.nanoTime();
-			  DecimalFormat df = new DecimalFormat("#.###");
-		      //System.out.println(df.format((double)(stopTime3 - startTime3) / 1000000000));
-			  String T = df.format((double)(stopTime3 - startTime3) / 1000000000);
+			  DecimalFormat format = new DecimalFormat("#.###");
+			  String T = format.format((double)(stopTime3 - startTime3) / 1000000000);
 		      output(ans, time, T, path);
 		}
 	
 	public static void output(String path, boolean ifTime, String time, String place) throws FileNotFoundException, UnsupportedEncodingException {
-		//PrintWriter writer = new PrintWriter(place.replace("input.txt", "output.txt"));
 		PrintWriter writer = new PrintWriter("output.txt");
 		writer.println(path);
+		System.out.println(path);
 		writer.println("Num: " + ansNum);
+		System.out.println("Num: " + ansNum);
 		if(!path.equals("no path")) {
 			writer.println("Cost: " + ansCost);
+			System.out.println("Cost: " + ansCost);
 		}	
 		if(ifTime) {
 			writer.println(time); //change to actual time
@@ -1068,9 +1266,7 @@ public class Ex1 {
 	
 	
 	public static void main(String[] args) throws NumberFormatException, IOException {
-		//Game("C:\\Users\\Gil-PC\\Desktop\\inputoutput\\input3.txt");
-		//System.out.println(args[0]);
-		Game("input.txt");
-		//System.out.println(A(aba));
+		Game("C:\\Users\\Gil-PC\\Desktop\\inputoutput\\input4.txt");
+		//Game("input.txt");
 	}
 }
