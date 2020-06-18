@@ -597,7 +597,7 @@ public class Ex1 {
 		return "no path";
 	}
 	
-	public static void Game(String path) throws NumberFormatException, IOException{
+	public static void Board(String path) throws NumberFormatException, IOException{
 		Matrix start;
 		String algo = null;
 		boolean time = false;
@@ -605,6 +605,7 @@ public class Ex1 {
 		long startTime = System.nanoTime();
 		int sizeI = 0;
 		int sizeJ = 0;
+		DecimalFormat format = new DecimalFormat("#.###");
 		String[] lineOfMat = null;
 		File file = new File(path); 
 		BufferedReader br = new BufferedReader(new FileReader(file)); 
@@ -648,7 +649,6 @@ public class Ex1 {
 			   if(st.length() != 0 && !st.equalsIgnoreCase(" ") && !st.equalsIgnoreCase(null)) {
 				   st=st.substring(1);	    	
 				   String[] temp=st.split(",");				    	
-				   //Red=new int[temp.length];
 				   for (int i = 0; i < temp.length; i++) {
 					   colors.put(Integer.parseInt(temp[i]), "Red");  
 				   }
@@ -691,30 +691,29 @@ public class Ex1 {
 			ans = DFBnB(start, openClosed);
 		}
 		long endTime = System.nanoTime();
-		DecimalFormat format = new DecimalFormat("#.###");
-		String T = format.format((double)(endTime - startTime) / 1000000000);
-		output(ans, time, T, path);
+		String ftime = format.format((double)(endTime - startTime) / 1000000000);
+		output(ans, time, ftime, path);
 	}
 	
-	public static void output(String path, boolean ifTime, String time, String place) throws FileNotFoundException, UnsupportedEncodingException {
+	public static void output(String path, boolean ifTime, String ftime, String place) throws FileNotFoundException, UnsupportedEncodingException {
 		PrintWriter writer = new PrintWriter("output.txt");
 		writer.println(path);
-		System.out.println(path);
+		//System.out.println(path);
 		writer.println("Num: " + ansNum);
-		System.out.println("Num: " + ansNum);
+		//System.out.println("Num: " + ansNum);
 		if(!path.equals("no path")) {
 			writer.println("Cost: " + ansCost);
-			System.out.println("Cost: " + ansCost);
+			//System.out.println("Cost: " + ansCost);
 		}	
 		if(ifTime) {
-			writer.println(time); //change to actual time
+			writer.println(ftime);
 		}
 		writer.close();
 	}
 	
 	
 	public static void main(String[] args) throws NumberFormatException, IOException {
-		//Game("C:\\Users\\Gil-PC\\Desktop\\solvingProblemInputs\\input.txt");
-		Game("input.txt");
+		//Board("C:\\Users\\Gil-PC\\Desktop\\solvingProblemInputs\\input9.txt");
+		Board("input.txt");
 	}
 }
