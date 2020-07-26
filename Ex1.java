@@ -16,6 +16,8 @@ import java.util.Queue;
 import java.util.Stack;
 import java.util.concurrent.TimeUnit;
 
+import javax.swing.text.html.HTMLDocument.Iterator;
+
 
 
 public class Ex1 {
@@ -436,6 +438,12 @@ public class Ex1 {
 				System.out.println(openlist.values().toString());
 			}
 			Matrix temp = q.poll();
+			if(goal(temp, finished_mat(start))) {
+				String ans = path2(temp);
+				ansNum = num;
+				ansCost = temp.cost;
+				return ans.substring(1);
+			}
 			openlist.remove(temp);
 			table.put(i++, temp);
 			for (int j = 0; j < 4; j++) {
@@ -444,21 +452,16 @@ public class Ex1 {
 					temp2 = getMove(temp, j);
 					num++; //generated nodes counter
 					if(!q.contains(temp2) && !table.contains(temp2)) {
-						if(goal(temp2, finished_mat(start))) {
-							j++;
-							while(j < 4) { //counting remaining brothers
-								if(check_ok(new Matrix(temp), j)) {
-									num++;
-								}
-								j++;
-							}
-							String ans = path2(temp2);
-							ansNum = num;
-							ansCost = temp2.cost;
-							return ans.substring(1);
-						}else {
 							q.add(temp2);
-							openlist.put(temp2, temp2);
+							openlist.put(temp2, temp2);						
+					}else if(q.contains(temp2)) {
+						java.util.Iterator<Matrix> iter = q.iterator(); 
+						while(iter.hasNext()) {
+							Matrix temp3 = iter.next();
+							if(temp3.equals(temp2) && temp3.cost > temp2.cost) {
+								q.remove(temp3);
+								q.add(temp2);
+							}
 						}
 					}
 				}
@@ -533,9 +536,10 @@ public class Ex1 {
 	public static String IDA(Matrix start, boolean openClosed) {
 		Hashtable<Matrix, String> table = new Hashtable<Matrix, String>();
 		Stack<Matrix> s = new Stack<Matrix>();
-		int n = 1; //generated states counter
+		int n = 1;
 		int t = h(start);
 		while(t != Integer.MAX_VALUE) { //upper bound for cost
+			n = 1; //start from the begining
 			int minF = Integer.MAX_VALUE;
 			s.add(start);
 			table.put(start, "");
@@ -554,17 +558,15 @@ public class Ex1 {
 						Matrix temp2 = null;
 						if(check_ok(new Matrix(temp), j)){
 							temp2 = getMove(temp, j);
-							if(f(temp2) > t) { //upper bound
+							n++;
+							if(f(temp2) > t) { //too distant nodes 
 								minF = Math.min(minF, f(temp2));
-								n++;
 								continue;
 							}
 							if(table.contains(temp2) && table.get(temp2).equals("out")) { //already checked
-								n++;
 								continue;
 							}
 							if(table.contains(temp2) && !table.get(temp2).equals("out")) { //already exist but not checked
-								n++;
 								Matrix temp3 = null; 
 								for (Matrix key : table.keySet()) {
 									if(key.equals(temp2)) {
@@ -579,7 +581,6 @@ public class Ex1 {
 								}
 							}
 							if(goal(temp2, finished_mat(start))) {
-								n++;
 								String ans = path2(temp2);
 								ansNum = n;
 								ansCost = temp2.cost;
@@ -617,7 +618,7 @@ public class Ex1 {
 				algo=st;
 			}
 			else if(line == 2) {
-				if( st.equalsIgnoreCase("no time")) {
+				if(st.equalsIgnoreCase("no time")) {
 					time=false;
 					}else {
 						time=true;
@@ -698,12 +699,12 @@ public class Ex1 {
 	public static void output(String path, boolean ifTime, String ftime, String place) throws FileNotFoundException, UnsupportedEncodingException {
 		PrintWriter writer = new PrintWriter("output.txt");
 		writer.println(path);
-		//System.out.println(path);
+		System.out.println(path);
 		writer.println("Num: " + ansNum);
-		//System.out.println("Num: " + ansNum);
+		System.out.println("Num: " + ansNum);
 		if(!path.equals("no path")) {
 			writer.println("Cost: " + ansCost);
-			//System.out.println("Cost: " + ansCost);
+			System.out.println("Cost: " + ansCost);
 		}	
 		if(ifTime) {
 			writer.println(ftime);
@@ -713,7 +714,7 @@ public class Ex1 {
 	
 	
 	public static void main(String[] args) throws NumberFormatException, IOException {
-		//Board("C:\\Users\\Gil-PC\\Desktop\\solvingProblemInputs\\input9.txt");
-		Board("input.txt");
+		Board("C:\\Users\\Gil-PC\\Desktop\\input3.txt");
+		//Board("input.txt");
 	}
 }
