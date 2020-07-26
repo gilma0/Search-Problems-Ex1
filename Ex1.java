@@ -9,14 +9,13 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.PriorityQueue;
 import java.util.Queue;
 import java.util.Stack;
 import java.util.concurrent.TimeUnit;
-
-import javax.swing.text.html.HTMLDocument.Iterator;
 
 
 
@@ -455,7 +454,7 @@ public class Ex1 {
 							q.add(temp2);
 							openlist.put(temp2, temp2);						
 					}else if(q.contains(temp2)) {
-						java.util.Iterator<Matrix> iter = q.iterator(); 
+						Iterator<Matrix> iter = q.iterator();
 						while(iter.hasNext()) {
 							Matrix temp3 = iter.next();
 							if(temp3.equals(temp2) && temp3.cost > temp2.cost) {
