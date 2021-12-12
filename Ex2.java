@@ -51,21 +51,6 @@ public class Ex2 {
 			return true;
 		} 
 		
-		//temp default for check
-		/*public Matrix() {
-			this.state = new int[2][2];
-			int a = 1;
-			for (int i = 0; i < state.length; i++) {
-				for (int j = 0; j < state[0].length; j++) {
-					this.state[i][j] = a++;
-				}
-			}
-			this.emptyi = 0;
-			this.emptyj = 0;
-			this.cost = 0;
-			this.state[0][0] = -1;
-			this.state[1][1] = 5;
-		}*/
 		//this matrix() is for the input.txt (the first) and for input3.txt
 		public Matrix() {
 			this.state = new int[3][4];
@@ -104,41 +89,6 @@ public class Ex2 {
 			}
 			this.father = null;		
 		}
-			
-		
-		
-			
-		
-		//this matrix() is for input2.txt
-		/*public Matrix() {
-			this.state = new int[3][4];
-			this.state[0][0] = 1;
-			this.state[0][1] = 2;
-			this.state[0][2] = 3;
-			this.state[0][3] = 4;
-			this.state[1][0] = 5;
-			this.state[1][1] = 6;
-			this.state[1][2] = 11;
-			this.state[1][3] = 7;
-			this.state[2][0] = 9;
-			this.state[2][1] = 10;
-			this.state[2][2] = 8;
-			this.state[2][3] = -1;
-			this.emptyi = 2;
-			this.emptyj = 3;
-			this.father = null;
-			colors.put(1, "Red");
-			colors.put(2, "Red");
-			colors.put(3, "Green");
-			colors.put(4, "Black");
-			colors.put(5, "Green");
-			colors.put(6, "Green");
-			colors.put(7, "Black");
-			colors.put(8, "Black");
-			colors.put(9, "Green");
-			colors.put(10, "Green");
-			colors.put(11, "Black");
-		}*/
 		
 		
 		public Matrix(Matrix m) {
@@ -174,19 +124,6 @@ public class Ex2 {
 			return false;
 		}
 		if (m.emptyi < 0 || m.emptyi >= m.state.length || m.emptyj < 0 || m.emptyj >= m.state[0].length) { //check for out of bounds
-			/*if(m.emptyi < 0) {
-				System.out.println("too high");
-			}
-			if(m.emptyi >= m.mat.length) {
-				System.out.println("too low");
-			}
-			if(m.emptyj < 0) {
-				System.out.println("too left");
-			}
-			if(m.emptyj >= m.mat[0].length) {
-				System.out.println("too right");
-			}*/
-			//System.out.println("check_ok2: out of bounds");
 			return false;
 		}
 		if(colors.get(m.state[m.emptyi][m.emptyj]).equals("Black")) { //black block, can't move
@@ -211,22 +148,6 @@ public class Ex2 {
 			return (empty_right(new Matrix(mat)));
 		}
 	}
-	
-	
-	/*public static Matrix empty_up(Matrix m) {
-		Matrix ans = new Matrix(m);
-		int temp = ans.state[ans.emptyi - 1][ans.emptyj];
-		if(colors.get(temp).equals("Green")) {
-			ans.cost += 1;
-		}
-		if(colors.get(temp).equals("Red")) {
-			ans.cost += 30;
-		}
-		ans.state[ans.emptyi - 1][ans.emptyj] = -1;
-		ans.state[ans.emptyi][ans.emptyj] = temp;
-		ans.emptyi--;
-		return ans;
-	}*/
 	
 	//this function move the empty space up
 	public static Matrix empty_up(Matrix mat) {
@@ -288,23 +209,6 @@ public class Ex2 {
 		return mat;
 	}
 	
-	//this goal is for starting with given matrix.
-	/*public static boolean goal(Matrix mat) {
-		int num = 1;
-		for (int i = 0; i < mat.state.length; i++) {
-			for (int j = 0; j < mat.state[0].length; j++) {
-				if(i == mat.state.length - 1 && j == mat.state[0].length - 1) { //reached the end, this is the right answer
-					return true;
-				}else if(mat.state[i][j] == num) {
-					num++;
-				}else {
-					return false;
-				}
-			}
-		}
-		return true;
-	}*/
-	
 	public static boolean goal(Matrix mat, Matrix finished) {
 		for (int i = 0; i < mat.state.length; i++) {
 			for (int j = 0; j < mat.state[0].length; j++) {
@@ -315,24 +219,6 @@ public class Ex2 {
 		}
 		return true;
 	}
-	
-	//this path is returning the height of the ans
-	/*public static int path(Matrix mat) {
-		//print the path
-		System.out.println("-------------------");
-		for (int i = 0; i < mat.state.length; i++) {
-			for (int j = 0; j < mat.state[0].length; j++) {
-				System.out.print(mat.state[i][j] + " ");
-			}
-			System.out.println();
-		}
-		System.out.println("-------------------");
-		if(mat.father == null) {
-			return 0;
-		}else {
-		 return 1 + path(mat.father);
-		}
-	}*/
 	
 	public static String direction(Matrix mat) { //for BFS
 		if(mat.father.emptyi == mat.emptyi + 1) {
@@ -377,14 +263,6 @@ public class Ex2 {
 		}
 	}
 	public static String path2(Matrix mat) {
-		/*System.out.println("-------------------");
-		for (int i = 0; i < mat.state.length; i++) {
-			for (int j = 0; j < mat.state[0].length; j++) {
-				System.out.print(mat.state[i][j] + " ");
-			}
-			System.out.println();
-		}
-		System.out.println("-------------------");*/
 		if(mat.father != null) {
 			return path2(mat.father) + "-" + mat.father.state[mat.emptyi][mat.emptyj] + direction2(mat);
 		}else {
@@ -409,7 +287,6 @@ public class Ex2 {
 	}
 	
 	//starts from answer puzzle to lower the number of nodes created
-	//need the check num!!!!!!!~~~~~~~~~~~~~~~~~~~~~~~
 	public static String BFS(Matrix start) {
 		Hashtable<Integer, Matrix> table = new Hashtable<Integer, Matrix>();
 		Queue<Matrix> q = new LinkedList<Matrix>();
@@ -423,26 +300,10 @@ public class Ex2 {
 			for (int j = 0; j < 4; j++) {
 				Matrix temp2 = null;
 				if(check_ok(new Matrix(temp), j)){
-					/*if(j == 0) {
-						temp2 = (empty_up(new Matrix(temp)));
-					}
-					if(j == 1) {
-						//temp2 = new Matrix(empty_down(temp));
-						temp2 = (empty_down(new Matrix(temp)));
-					}
-					if(j == 2) {
-						//temp2 = new Matrix(empty_left(temp));
-						temp2 = (empty_left(new Matrix(temp)));
-					}
-					if(j == 3) {
-						//temp2 = new Matrix(empty_right(temp));
-						temp2 = (empty_right(new Matrix(temp)));
-					}*/
 					temp2 = getMove(temp, j);
 					
 					if(!q.contains(temp2) && !table.contains(temp2)) {
 						num++;
-						//if(goal(temp2)) {
 						if(goal(temp2, start)) {
 							System.out.println("cost: " + temp2.cost);
 							System.out.println("num: " + num);
@@ -502,24 +363,15 @@ public class Ex2 {
 								}
 							}
 							else if(goal(array.get(i), finished_mat(mat))) {
-								//N.get(i).findf(N.get(i)).updatef(num, N.get(i).cost, N.get(i).path().substring(1));
 								t = f(array.get(i));
-								//t = f(temp2);
 								result = path2(array.get(i));
 								ansNum = 0; //needs replacing
 								ansCost = array.get(i).cost;
 								return result.substring(1);
-								/*for (int k = i; k < array.size(); k++) { ///~~~~~~~not sure about this, no need to continue
-									array.remove(k);
-									//i++;//??????????????
-								}*/
-							}
 						}
 						for (int k = array.size() - 1; k >= 0; k--) {
-							//if(k<array.size() && array.get(k)!=null) {
 								stack.add(array.get(k));
 								table.put(array.get(k), "");
-							//}
 						}
 					}
 				}
@@ -527,46 +379,7 @@ public class Ex2 {
 		}
 		return "no path";
 	}
-	
-	//old h function
-	/*public static int h(Matrix mat) {
-		int Edistance = 0;
-		Matrix temp = finished_mat(mat);
-		for (int i = 0; i < mat.state.length; i++) {
-			for (int j = 0; j < mat.state[0].length; j++) {
-				if(temp.state[i][j] != mat.state[i][j]) {
-					//Edistance += Math.abs(arg0)
-					int x1 = 0;
-					int y1 = 0;
-					int num = mat.state[i][j];//number that should be here
-					for (int k = 0; k < mat.state.length; k++) {//find the number position in the given mat
-						for (int k2 = 0; k2 < mat.state[0].length; k2++) {
-							//if(mat.state[k][k2] == temp.state[i][j] && mat.state[k][k2] == num) {
-							if(mat.state[k][k2] == num) {
-								x1 = k + 1;
-								y1 = k2 + 1;
-								//x1 = k;
-								//y1 = k2;
-								System.out.println("x1: " + x1 + "\ny1: " + y1);
-							}
-						}
-					}
-					//Edistance += (Math.abs(x1-(i+1)) + Math.abs(y1-(j+1)));
-					//System.out.println(num);
-					if(num == -1) {
-						continue;
-					}
-					if(colors.get(num).equals("Red")) {
-						Edistance += (Math.abs(x1-(i+1)) + Math.abs(y1-(j+1))) * 30;
-					}else {
-						Edistance += (Math.abs(x1-(i+1)) + Math.abs(y1-(j+1)));
-					}
-					System.out.println("current state of Edistance: " + Edistance);
-				}
-			}
-		}
-		return Edistance;
-	}*/
+		
 	public static int h(Matrix mat) {
 		int Edistance = 0;
 		Matrix temp = finished_mat(mat);
@@ -609,7 +422,6 @@ public class Ex2 {
 	//A* algorithm
 	//extremely similar to BFS, only difference is that we choose the best child to continue, the one with the lowest estimated cost to goal. 
 	//need to check if start from start or from the end
-	////////// PROBLEM THAT CAN OCCUR AND I NEED TO CHECK IS IF THERE IS A NEED NOT TO DUMP ALL THE NODES!!!!~~~~ (choose the highest floor if duplicate)
 	public static String A(Matrix start){
 		Hashtable<Integer, Matrix> table = new Hashtable<Integer, Matrix>();
 		Queue<Matrix> q = new LinkedList<Matrix>();
@@ -633,21 +445,6 @@ public class Ex2 {
 			for (int j = 0; j < 4; j++) {
 				Matrix temp2 = null;
 				if(check_ok(new Matrix(temp), j)){
-					/*if(j == 0) {
-						temp2 = (empty_up(new Matrix(temp)));
-					}
-					if(j == 1) {
-						//temp2 = new Matrix(empty_down(temp));
-						temp2 = (empty_down(new Matrix(temp)));
-					}
-					if(j == 2) {
-						//temp2 = new Matrix(empty_left(temp));
-						temp2 = (empty_left(new Matrix(temp)));
-					}
-					if(j == 3) {
-						//temp2 = new Matrix(empty_right(temp));
-						temp2 = (empty_right(new Matrix(temp)));
-					}*/
 					temp2 = getMove(temp, j);
 					num++;
 					if(!q.contains(temp2) && !table.contains(temp2)) {
@@ -699,28 +496,13 @@ public class Ex2 {
 			for (int j = 0; j < 4; j++) {
 				Matrix temp2 = null;
 				if(check_ok(new Matrix(n), j)){
-					/*if(j == 0) {
-						temp2 = (empty_up(new Matrix(n)));
-					}
-					if(j == 1) {
-						//temp2 = new Matrix(empty_down(temp));
-						temp2 = (empty_down(new Matrix(n)));
-					}
-					if(j == 2) {
-						//temp2 = new Matrix(empty_left(temp));
-						temp2 = (empty_left(new Matrix(n)));
-					}
-					if(j == 3) {
-						//temp2 = new Matrix(empty_right(temp));
-						temp2 = (empty_right(new Matrix(n)));
-					}*/
 					temp2 = getMove(n, j); //instead of if's
 					//num++;
 					if(!table.contains(temp2)) {
 						String result = Limited_DFS(temp2, limit - 1, table);
 						if(result == "cutoff") {
 							isCutoff = true;
-						}else if(result != "fail") {//change fail!~!~!~!~!~!~
+						}else if(result != "fail") {
 							ansCost = temp2.cost;
 							return result;
 						}
@@ -738,9 +520,6 @@ public class Ex2 {
 	
 	
 	public static String IDA(Matrix start) {
-		//Hashtable<Matrix, Integer> table = new Hashtable<Matrix, Integer>();
-		//Hashtable<Integer, Matrix> table = new Hashtable<Integer, Matrix>();
-		//Hashtable<Matrix, Matrix> table = new Hashtable<Matrix, Matrix>();
 		Hashtable<Matrix, String> table = new Hashtable<Matrix, String>();
 		Stack<Matrix> s = new Stack<Matrix>();
 		//table.put(1, start);
@@ -749,58 +528,29 @@ public class Ex2 {
 		while(t != Integer.MAX_VALUE) { //should be t != infinity
 			int minF = Integer.MAX_VALUE;
 			s.add(start);
-			//table.put(start, n++);
-			//table.put(n++, start);
-			//table.put(start, start);
 			table.put(start, "");
 			while(!s.isEmpty()) {
 				Matrix temp = s.pop();
-				/*if(temp.marked.equals("out")) {
-					table.remove(temp);
-				}else {*/
 				if(table.get(temp).equals("out")) {
 					table.remove(temp);
 				}else {
-					//temp.marked = "out";
 					table.remove(temp);
 					table.put(temp, "out");
 					s.add(temp);
 					for (int j = 0; j < 4; j++) {
 						Matrix temp2 = null; //temp2 == g
 						if(check_ok(new Matrix(temp), j)){
-							/*if(j == 0) {
-								temp2 = (empty_up(new Matrix(temp)));
-							}
-							if(j == 1) {
-								//temp2 = new Matrix(empty_down(temp));
-								temp2 = (empty_down(new Matrix(temp)));
-							}
-							if(j == 2) {
-								//temp2 = new Matrix(empty_left(temp));
-								temp2 = (empty_left(new Matrix(temp)));
-							}
-							if(j == 3) {
-								//temp2 = new Matrix(empty_right(temp));
-								temp2 = (empty_right(new Matrix(temp)));
-							}*/
 							temp2 = getMove(temp, j);
-							//n++;
-							//System.out.println("aba");
 							if(f(temp2) > t) {
 								minF = Math.min(minF, f(temp2));
 								n++;
 								//System.out.println("if1");
 								continue;
 							}
-							//n++;
-							//table.
-							//if(table.contains(temp2) && table.get(temp2).marked.equals("out")) {
 							if(table.contains(temp2) && table.get(temp2).equals("out")) {
 								n++;
-								//System.out.println("if2");
 								continue;
 							}
-							//if(table.contains(temp2) && !table.get(temp2).marked.equals("out")) {
 							if(table.contains(temp2) && !table.get(temp2).equals("out")) {//addition
 								n++;
 								Matrix temp3 = null; //g'
@@ -809,28 +559,22 @@ public class Ex2 {
 										temp3 = key;
 									}
 								}//end addition
-								//if(f(table.get(temp2)) > f(temp2)) { //first temp2 is g, second is g' needs checking!!!
 								if(f(temp3) > f(temp2)) {
-									//s.remove(table.get(temp2));
-									s.remove(temp3);//should remove g'
-									table.remove(temp3); //should remove g'
+									s.remove(temp3);
+									table.remove(temp3); 
 								}else {
 									continue;
 								}
 							}
-							if(goal(temp2, finished_mat(start))) { //this is g not g'
+							if(goal(temp2, finished_mat(start))) {
 								System.out.println("cost: " + temp2.cost);
 								System.out.println("num: " + n);
 								String ans = path2(temp2);
 								ansNum = n;
 								ansCost = temp2.cost;
 								return ans.substring(1);
-								//return path(temp2); //path of g, not g'
 							}
-							s.add(temp2);    //this is g, not g'
-							//n++;
-							//table.put(temp2, temp2); //this is g, not g'
-							//table.put(temp2, "out");
+							s.add(temp2);
 							table.put(temp2, "");
 						}
 					}
@@ -846,8 +590,6 @@ public class Ex2 {
 		String algo = null;
 		boolean time = false;
 		boolean openclosed;
-		//public Hashtable<Integer, String> Colors = new Hashtable<Integer, String>();
-		//ArrayList<Block[][]> exist= new ArrayList<Block[][]>();
 		long startTime3 = System.nanoTime();
 		int sizei=0, sizej = 0;
 		int[] Black = null;
@@ -917,41 +659,26 @@ public class Ex2 {
 					  }
 				  }
 			  }
-			 // System.out.println(colors.toString());
 			  start = new Matrix(temp);
-			  /*for (int i = 0; i < start.state.length; i++) {
-				for (int j = 0; j < start.state[0].length; j++) {
-					System.out.print(start.state[i][j] + " ");
-				}
-				System.out.println();
-			}*/
 			  String ans;
 			  if(algo.equals("BFS")) {
-				  //System.out.println(BFS(start));
 				  ans = BFS(start);
 			  }
 			  else if(algo.equals("A*")) {
-				  //System.out.println(A(start));
 				  ans = A(start);
 			  }
 			  else if(algo.equals("DFID")) {
-				  //System.out.println(DFID(start));
 				  ans = DFID(start);
 			  }
 			  else if(algo.equals("IDA*")) {
-				  //System.out.println(IDA(start));
 				  ans = IDA(start);
 			  }
 			  else {
-				  //System.out.println(DFBnB(start));
 				  ans = DFBnB(start);
 			  }
-			  //System.out.println(start.num);
 			  System.out.println("cost: " + start.cost);
-			  //System.out.println(start.path);
 			  long stopTime3 = System.nanoTime();
 			  DecimalFormat df = new DecimalFormat("#.###");
-		      //System.out.println(df.format((double)(stopTime3 - startTime3) / 1000000000));
 			  String T = df.format((double)(stopTime3 - startTime3) / 1000000000);
 		      output(ans, time, T);
 		}
@@ -971,26 +698,7 @@ public class Ex2 {
 	
 	
 	public static void main(String[] args) throws NumberFormatException, IOException {
-		Game("C:\\Users\\Gil-PC\\Desktop\\פיתרון בעיות באמצעות חיפוש\\input4.txt");
-		//Matrix aba = new Matrix();
-		//System.out.println(A(aba));
-		//System.out.println(DFBnB(aba));
-		//System.out.println(h(aba));
-		//System.out.println(h(empty_left(new Matrix(aba))));
-		//System.out.println("empty right: " + f(empty_right(empty_up(empty_left(new Matrix(aba))))));
-		//System.out.println("empty left: " + f(empty_left(empty_up(empty_left(new Matrix(aba))))));
-		//System.out.println("empty up: " + f(empty_up(empty_up(empty_left(new Matrix(aba))))));
-		//System.out.println("empty down: " + f(empty_down(empty_up(empty_left(new Matrix(aba))))));
-		////System.out.println("empty down: " + h(empty_down(empty_right(empty_up(empty_left(new Matrix(aba)))))));
-		////System.out.println("empty up: " + h(empty_up(empty_right(empty_up(empty_left(new Matrix(aba)))))));
-		//System.out.println("empty right: " + f(empty_right(empty_right(empty_up(empty_left(new Matrix(aba)))))));
-		////System.out.println("empty left: " + h(empty_left(empty_right(empty_up(empty_left(new Matrix(aba)))))));
-		//System.out.println(h(empty_up(new Matrix(aba))));
-		//System.out.println(h(aba));
-		//System.out.println(f(empty_left(new Matrix(aba))));
-		//System.out.println(f(empty_left(empty_up(new Matrix(aba)))));
-		//System.out.println(f(empty_up(new Matrix(aba))));
-		//System.out.println(h(empty_left(empty_left(new Matrix(aba)))));
+		Game("");
 
 	}
 }
